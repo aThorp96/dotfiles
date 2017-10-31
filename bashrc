@@ -2,6 +2,17 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
+#Color decalrations:
+GRAY='\[\033[1;30m\]'
+LIGHT_RED='\[\033[1;31m\]'
+LIGHT_GREEN='\[\033[1;32m\]'
+LIGHT_YELLOW='\[\033[1;33m\]'
+LIGHT_BLUE='\[\033[1;36m\]'
+LIGHT_PURPLE='\[\033[1;35m\]'
+LIGHT_CYAN='\[\033[1;36m\]'
+WHITE='\[\033[1;37m\]'
+CLEAR_COLOR='\[\033[0m\]'
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -57,7 +68,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\e[36m \w \e[35m>\e[39m'
+    PS1="$LIGHT_GREEN\u$LIGHT_BLUE \w $LIGHT_PURPLE>$WHITE"
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
