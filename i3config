@@ -30,9 +30,9 @@ font pango:monospace 8
 floating_modifier $mod
 
 # start an application
-bindsym $mod+Return exec st         #Terminal
-bindsym $mod+d exec dmenu_run       #D-Menu
-bindsym $mod+shift+w exec google-chrome   #Chrome
+bindsym $mod+Return exec xfce4-terminal     #Terminal
+bindsym $mod+d exec dmenu_run               #D-Menu
+bindsym $mod+shift+w exec google-chrome     #Chrome
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -174,8 +174,8 @@ bar {
 
 }
 # Pulse Audio controls
-bindsym XF86AudioRaiseVolume exec $HOME/code/configs/volumeUp.sh #increase sound volume
-bindsym XF86AudioLowerVolume exec  $HOME/code/configs/volumeDown.sh #increase sound volume
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5% 
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
 
 # Sreen brightness controls
