@@ -133,3 +133,7 @@ fi
 
 # Set GOPATH
 export GOPATH=$HOME/code/go
+export PATH=$PATH:$GOPATH/bin
+
+#Run fish
+fish
