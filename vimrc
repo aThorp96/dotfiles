@@ -19,6 +19,7 @@
 :set backspace=2       " makes backspace work like you expect
 :set scrolloff=10      " leaves a buffer of ten lines below your curser until you reach the end of file.
 :set number            " Makes line number appear (Why is this not default?).
+:set relativenumber    " Makes relative numbers
 
 " Switch syntax highlighting on, when the terminal can support colors
 if &t_Co > 2 || has("gui_running")
