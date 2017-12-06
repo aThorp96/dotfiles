@@ -106,6 +106,7 @@ alias eclipse='/home/awildthorp/eclipse/eclipse'
 alias v='vim'
 alias vir='vim -R'
 alias cal='calcurse'
+alias led='ledger -f main.ledger'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
