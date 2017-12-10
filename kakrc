@@ -8,6 +8,7 @@ set global indentwidth 4
 
 #Set line numbers
 addhl global/ number_lines -relative -hlcursor
+set global scrolloff 999,0
 
 #Set color scheme
 colorscheme YellowLines
