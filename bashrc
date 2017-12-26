@@ -103,6 +103,7 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias eclipse='/home/awildthorp/eclipse/eclipse'
+alias k='kak'
 alias v='vim'
 alias vir='vim -R'
 alias cal='calcurse'
@@ -132,7 +133,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Set GOPATH
+# Set env variables
+export EDITOR=/bin/kak
 export GOPATH=$HOME/code/go
 export PATH=$PATH:$GOPATH/bin
 
