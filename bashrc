@@ -138,5 +138,5 @@ export EDITOR=/bin/kak
 export GOPATH=$HOME/code/go
 export PATH=$PATH:$GOPATH/bin
 
-#Run fish
-fish
+#Run fish (Not good when using a TTY)
+#fish
