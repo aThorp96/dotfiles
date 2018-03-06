@@ -30,6 +30,6 @@ hook global BufWritePre .*\.go %{
 }
 
 #   -Ledger 
-hook global WinCreate .*\.dat %{
+hook global WinCreate .*\.ledger %{
     colorscheme gruvbox
 }
