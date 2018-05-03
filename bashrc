@@ -138,5 +138,13 @@ export EDITOR=/bin/kak
 export GOPATH=$HOME/code/go
 export PATH=$PATH:$GOPATH/bin
 
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent > ~/.ssh-agent-thing
+    ssh-add -t 1h
+fi
+if [[ "$SSH_AGENT_PID" == "" ]]; then
+    eval "$(<~/.ssh-agent-thing)" > /dev/null
+fi
+
 #Run fish
 fish

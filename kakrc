@@ -1,21 +1,29 @@
-# Turns off mouse navigation
-set global ui_options ncurses_enable_mouse=false
-
 # Set tab length to 4 characters
 hook global InsertChar \t %{ exec -draft -itersel h@ }
 set global tabstop 4
 set global indentwidth 4
 
-#Set line numbers
+# Interface option
+ 
+#   Set line numbers
 addhl global/ number_lines -relative -hlcursor
 set global scrolloff 999,0
+add-highlighter global/ show_matching
+#   Turns off mouse navigation
+set global ui_options ncurses_enable_mouse=false # ncurses_assistant=dilbert
 
-#Set color scheme
-colorscheme YellowLines
+
+#   Set color scheme
+colorscheme gruvbox
 
 #Type specific hooks (Thanks @whereswaldon )
 #   -Markdown
 hook global WinCreate .*\.md %{ add-highlighter global wrap -word -indent }
+
+#   -C
+hook global WinCreate .*\.cc %{
+
+    }
 
 #   -Golang
 hook global WinCreate .*\.go %{
@@ -33,3 +41,4 @@ hook global BufWritePre .*\.go %{
 hook global WinCreate .*\.ledger %{
     colorscheme gruvbox
 }
+

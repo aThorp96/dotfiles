@@ -34,7 +34,7 @@ bindsym $mod+Shift+q kill
 #################################### Environment Variables #####################################
 ################################################################################################
 
-set $TERM=xfce4-terminal
+set $TERM xfce4-terminal
 
 ################################################################################################
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
