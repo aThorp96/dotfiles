@@ -103,9 +103,11 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias eclipse='/home/awildthorp/eclipse/eclipse'
+alias k='kak'
 alias v='vim'
 alias vir='vim -R'
 alias cal='calcurse'
+alias led='ledger -f main.ledger'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -131,5 +133,19 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Set GOPATH
+# Set env variables
+export EDITOR=/bin/kak
 export GOPATH=$HOME/code/go
+export GOGIT=$GOPATH/src/github.com/aThorp96/
+export PATH=$PATH:$GOPATH/bin
+
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent > ~/.ssh-agent-thing
+    ssh-add -t 1h
+fi
+if [[ "$SSH_AGENT_PID" == "" ]]; then
+    eval "$(<~/.ssh-agent-thing)" > /dev/null
+fi
+
+#Run fish
+fish
