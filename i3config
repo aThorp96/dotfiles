@@ -31,6 +31,15 @@ floating_modifier $mod
 bindsym $mod+Shift+q kill
 
 ################################################################################################
+<<<<<<< HEAD
+=======
+#################################### Environment Variables #####################################
+################################################################################################
+
+set $TERM xfce4-terminal
+
+################################################################################################
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
 ################################################################################################
 
@@ -53,6 +62,7 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute s
 ################################################################################################
 ####################################  Launch Applications ######################################
 ################################################################################################
+<<<<<<< HEAD
 bindsym $mod+Return exec xfce4-terminal			# Launch Terminal
 bindsym $mod+d exec --no-startup-id dmenu_recency	# Launch D-Menu
 bindsym $mod+z exec --no-startup-id morc_menu		# Launch Visual Menu
@@ -60,6 +70,15 @@ bindsym $mod+shift+w exec firefox-nightly			# Launch Firefox
 bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 bindsym $mod+F3 exec pcmanfm
 # bindsym $mod+F3 exec ranger
+=======
+bindsym $mod+Return exec $TERM			# Launch Terminal
+bindsym $mod+d exec --no-startup-id dmenu_recency	# Launch D-Menu
+bindsym $mod+z exec --no-startup-id morc_menu		# Launch Visual Menu
+bindsym $mod+shift+w exec firefox-nightly			# Launch Firefox
+bindsym $mod+Shift+Return exec $TERM -e ranger			# Launch Ranger
+bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
+bindsym $mod+F3 exec pcmanfm
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 bindsym $mod+Shift+F3 exec gksu pcmanfm
 bindsym $mod+F5 exec terminal -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill compton
@@ -70,7 +89,11 @@ bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
 bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
 bindsym $mod+Shift+h exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
+<<<<<<< HEAD
 
+=======
+################################################################################################
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 
 # change focus
 focus_follows_mouse no
@@ -175,7 +198,11 @@ bindsym $mod+Ctrl+6 move container to workspace $ws6
 bindsym $mod+Ctrl+7 move container to workspace $ws7
 bindsym $mod+Ctrl+8 move container to workspace $ws8
 bindsym $mod+Ctrl+9 move container to workspace $ws9
+<<<<<<< HEAD
 bindsym $mod+Ctrl+0 move container to workspace $ws10
+=======
+bindsym $mod+Ctrl+0 move container to workspace $ws0
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 
 # Move to workspace with focused container
 bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
@@ -187,7 +214,11 @@ bindsym $mod+Shift+6 move container to workspace $ws6; workspace $ws6
 bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
 bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9; workspace $ws9
+<<<<<<< HEAD
 bindsym $mod+Shift+0 move container to workspace $ws10; workspace $ws10
+=======
+bindsym $mod+Shift+0 move container to workspace $ws0; workspace $ws0
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 
 # Open applications on specific workspaces
 # assign [class="Thunderbird"] $ws1
@@ -282,7 +313,11 @@ bindsym $mod+shift+x exec --no-startup-id blurlock
 
 # Autostart applications
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+<<<<<<< HEAD
 exec --no-startup-id nitrogen --restore; sleep 1; compton -b
+=======
+#exec --no-startup-id nitrogen --set-scaled --random; sleep 1; compton -b
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 #exec --no-startup-id manjaro-hello
 exec --no-startup-id nm-applet
 exec --no-startup-id xfce4-power-manager
@@ -290,8 +325,11 @@ exec --no-startup-id pamac-tray
 exec --no-startup-id clipit
 # exec --no-startup-id blueman-applet
 # exec_always --no-startup-id sbxkb
+<<<<<<< HEAD
 exec --no-startup-id start_conky_maia
 # exec --no-startup-id start_conky_green
+=======
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 exec --no-startup-id xautolock -time 10 -locker blurlock
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
@@ -398,6 +436,7 @@ client.background       $i3_background
 #############################
 ### settings for i3-gaps: ###
 #############################
+<<<<<<< HEAD
 
 # Set inner/outer gaps
 gaps inner 0
@@ -415,12 +454,34 @@ smart_gaps on
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
 smart_borders on
 
+=======
+# Set inner/outer gaps
+gaps inner 0
+gaps outer 0
+
+# Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
+# gaps inner|outer current|all set|plus|minus <px>
+# gaps inner all set 10
+# gaps outer all plus 5
+
+# Smart gaps (gaps used if only more than one container on the workspace)
+smart_gaps on
+
+# Smart borders (draw borders around container only if it is not the only container on this workspace) 
+# on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
+smart_borders on
+
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 # Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
 set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
 set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
 bindsym $mod+Shift+g mode "$mode_gaps"
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 mode "$mode_gaps" {
         bindsym o      mode "$mode_gaps_outer"
         bindsym i      mode "$mode_gaps_inner"
