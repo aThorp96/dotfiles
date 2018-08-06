@@ -136,6 +136,7 @@ fi
 # Set env variables
 export EDITOR=/bin/kak
 export GOPATH=$HOME/code/go
+export GOGIT=$GOPATH/src/github.com/aThorp96
 export PATH=$PATH:$GOPATH/bin
 
 if ! pgrep -u "$USER" ssh-agent > /dev/null; then
