@@ -18,10 +18,12 @@ colorscheme gruvbox
 
 #Type specific hooks (Thanks @whereswaldon )
 #   -Markdown
-hook global WinCreate .*\.md %{ add-highlighter global wrap -word -indent }
+hook global WinCreate .*\.md %{ 
+add-highlighter global wrap -word -indent 
+}
 
 #   -C
-hook global WinCreate .*\.cc %{
+hook global WinCreate .*\.c %{
 
     }
 

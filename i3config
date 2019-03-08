@@ -34,36 +34,32 @@ bindsym $mod+Shift+q kill
 #################################### Environment Variables #####################################
 ################################################################################################
 
-set $TERM xfce4-terminal
+set $TERM st
+
+# Workspace names
+# to display names or symbols instead of plain workspace numbers you can use
+# something like: set $ws1 1:mail
+#                 set $ws2 2:
+set $ws1 "1"
+set $ws2 2
+set $ws3 3
+set $ws4 4
+set $ws5 5
+set $ws6 6
+set $ws7 7
+set $ws8 8
+set $ws9 9
+set $ws0 10
 
 ################################################################################################
-## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
+#################################### Launch Applications #######################################
 ################################################################################################
 
-exec --no-startup-id volumeicon
-#bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
-exec --no-startup-id pulseaudio
-exec --no-startup-id pa-applet
-bindsym $mod+Ctrl+m exec pavucontrol
-# Pulse Audio controls
-bindsym XF86AudioRaiseVolume exec $HOME/code/scripts/volumeUp.sh
-bindsym XF86AudioLowerVolume exec $HOME/code/scripts/volumeDown.sh
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
-
-################################################################################################
-
-# Screen brightness controls
-# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
-# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
-
-################################################################################################
-####################################  Launch Applications ######################################
-################################################################################################
-bindsym $mod+Return exec $TERM			# Launch Terminal
+bindsym $mod+Return exec $TERM			            # Launch Terminal
 bindsym $mod+d exec --no-startup-id dmenu_recency	# Launch D-Menu
 bindsym $mod+z exec --no-startup-id morc_menu		# Launch Visual Menu
-bindsym $mod+shift+w exec firefox-nightly			# Launch Firefox
-bindsym $mod+Shift+Return exec $TERM -e ranger			# Launch Ranger
+bindsym $mod+shift+w exec fire          			# Launch Firefox
+bindsym $mod+Shift+Return exec $TERM -e rover		# Launch Rover
 bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 bindsym $mod+F3 exec pcmanfm
 bindsym $mod+Shift+F3 exec gksu pcmanfm
@@ -76,6 +72,28 @@ bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
 bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
 bindsym $mod+Shift+h exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
+
+################################################################################################
+###################################### sound-section ###########################################
+##########  DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! #########
+################################################################################################
+
+exec --no-startup-id volumeicon
+#bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
+exec --no-startup-id pulseaudio
+exec --no-startup-id pa-applet
+bindsym $mod+Ctrl+m exec pavucontrol
+# Pulse Audio controls
+bindsym XF86AudioRaiseVolume exec $HOME/code/scripts/volumeUpAM.sh
+bindsym XF86AudioLowerVolume exec $HOME/code/scripts/volumeDownAM.sh
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
+
+################################################################################################
+
+# Screen brightness controls
+# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
+# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
+
 ################################################################################################
 
 # change focus
@@ -109,8 +127,9 @@ bindsym $mod+b workspace back_and_forth
 bindsym $mod+Shift+b move container to workspace back_and_forth; workspace back_and_forth
 
 # split orientation
-bindsym $mod+h split h;exec notify-send 'tile horizontally'
-bindsym $mod+v split v;exec notify-send 'tile vertically'
+# Uncomment if you want notifications for tiling change
+#bindsym $mod+h split h;exec notify-send 'tile horizontally'
+#bindsym $mod+v split v;exec notify-send 'tile vertically'
 bindsym $mod+q split toggle
 
 # toggle fullscreen mode for the focused container
@@ -144,20 +163,9 @@ bindsym $mod+minus scratchpad show
 bindsym $mod+Ctrl+Right workspace next
 bindsym $mod+Ctrl+Left workspace prev
 
-# Workspace names
-# to display names or symbols instead of plain workspace numbers you can use
-# something like: set $ws1 1:mail
-#                 set $ws2 2:
-set $ws1 "1"
-set $ws2 2
-set $ws3 3
-set $ws4 4
-set $ws5 5
-set $ws6 6
-set $ws7 7
-set $ws8 8
-set $ws9 9
-set $ws0 10
+################################################################################################
+################################### Workspace Navigation #######################################
+################################################################################################
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -200,6 +208,8 @@ bindsym $mod+Shift+0 move container to workspace $ws0; workspace $ws0
 # assign [class="Pale moon"] $ws2
 # assign [class="Pcmanfm"] $ws3
 # assign [class="Skype"] $ws5
+
+################################################################################################
 
 # Open specific applications in floating mode
 for_window [title="alsamixer"] floating enable border pixel 1
@@ -336,26 +346,26 @@ set_from_resource $term_color15    color15
 # https://i3wm.org/dovs/userguide.html#variables
 # Changing the value of one of the variables will
 # effect all the areas with the same color.
-set $i3_background      #2b2c2b
-set $i3_text            #f9faf9
-set $i3_separator       #454947
-set $i3_color1          #f9faf9
-set $i3_color2          #595b5b
-set $i3_color3          #353836
-set $i3_color4          #16a085
-set $i3_color5          #fdf6e3
-set $i3_color6          #eee8d5
-set $i3_color7          #e5201d
-set $i3_color8          #808380
-set $i3_color9          #434745
-set $i3_color10         #454948
-set $i3_color11         #80fff9
-set $i3_color12         #fdf6e3
-set $i3_color13         #cb4b16
-set $i3_color14         #268bd2
-set $i3_color15         #000000
-set $i3_color16         #ffffff
-set $i3_color17         #0c0c0c
+set $i3_background      $term_background
+set $i3_text            $term_color0
+set $i3_separator       $term_foreground
+set $i3_color1          $term_color1
+set $i3_color2          $term_color2
+set $i3_color3          $term_color3
+set $i3_color4          $term_color4
+set $i3_color5          $term_color5
+set $i3_color6          $term_color6
+set $i3_color7          $term_color7
+set $i3_color8          $term_color8
+set $i3_color9          $term_color9
+set $i3_color10         $term_color10
+set $i3_color11         $term_color11
+set $i3_color12         $term_color12
+set $i3_color13         $term_color13
+set $i3_color14         $term_color14
+set $i3_color15         $term_color15
+set $i3_color16         $term_color16
+set $i3_color17         $term_color17
 
 # Start i3bar to display a workspace bar (plus the system information i3status if available)
 bar {
@@ -373,16 +383,16 @@ bar {
 	strip_workspace_numbers yes
 
 	colors {
-        background $i3_background
-        statusline $i3_text
+        background $term_background
+        statusline $term_foreground
         separator  $i3_separator
 
-#                           border     backgr.        text
-        focused_workspace   $i3_color1 $i3_color4     $i3_text
-        active_workspace    $i3_color2 $i3_color3     $i3_color5
-        inactive_workspace  $i3_color2 $i3_color3     $i3_color6
-        binding_mode        $i3_color8 $i3_background $i3_text
-        urgent_workspace    $i3_color4 $i3_color5     $i3_color7
+#                           border          backgr.             text
+        focused_workspace   $i3_color15     $term_foreground    $term_background
+        active_workspace    $i3_color7      $term_background    $i3_color5
+        inactive_workspace  $i3_color7      $term_background    $i3_color6
+        binding_mode        $i3_color7      $term_background    $i3_text
+        urgent_workspace    $i3_color7      $i3_color5          $i3_color7
     }
 }
 
@@ -390,12 +400,12 @@ bar {
 bindsym $mod+m bar mode toggle
 
 # Theme colors
-# class                 border      backgr.     text        indic.      child_border
-client.focused          $i3_color8  $i3_color8  $i3_color11 $i3_color12
-client.focused_inactive $i3_color9  $i3_color9  $i3_color4  $i3_color10
-client.unfocused        $i3_color9  $i3_color9  $i3_color4  $i3_color10
-client.urgent           $i3_color13 $i3_color12 $i3_color4  $i3_color14
-client.placeholder      $i3_color15 $i3_color17 $i3_color16 $i3_color15 $i3_color17
+# class                 border              backgr.     text        indic.      child_border
+client.focused          $term_foreground    $i3_color8  $i3_color5  $term_foreground
+client.focused_inactive $term_background    $i3_color9  $i3_color4  $i3_color10
+client.unfocused        $term_background    $i3_color9  $i3_color4  $i3_color10
+client.urgent           $i3_color13         $i3_color12 $i3_color4  $i3_color14
+client.placeholder      $i3_color15         $i3_color17 $i3_color16 $i3_color15 $i3_color17
 
 client.background       $i3_background
 
@@ -403,8 +413,8 @@ client.background       $i3_background
 ### settings for i3-gaps: ###
 #############################
 # Set inner/outer gaps
-gaps inner 0
-gaps outer 0
+gaps inner 4
+gaps outer 2
 
 # Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
 # gaps inner|outer current|all set|plus|minus <px>
@@ -412,11 +422,11 @@ gaps outer 0
 # gaps outer all plus 5
 
 # Smart gaps (gaps used if only more than one container on the workspace)
-smart_gaps on
+#smart_gaps off
 
 # Smart borders (draw borders around container only if it is not the only container on this workspace) 
 # on|no_gaps (on=always activate and no_gaps=only activate if the gap size to the edge of the screen is 0)
-smart_borders on
+#smart_borders no
 
 # Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
 set $mode_gaps Gaps: (o) outer, (i) inner
