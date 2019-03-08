@@ -11,7 +11,7 @@ addhl global/ number_lines -relative -hlcursor
 set global scrolloff 999,0
 
 #Set color scheme
-colorscheme YellowLines
+#colorscheme gruvbox
 
 #Type specific hooks (Thanks @whereswaldon )
 #   -Markdown
@@ -27,6 +27,17 @@ hook global WinCreate .*\.go %{
 
 hook global BufWritePre .*\.go %{
     go-format
+}
+
+hook global WinSetOption filetype=c %{
+    clang-enable-autocomplete
+    clang-enable-diagnostics
+    hook buffer BufWritePre .* %{
+        clang-parse
+    }
+    hook buffer InsertEnd .* %{
+        clang-parse
+    }
 }
 
 #   -Ledger 
