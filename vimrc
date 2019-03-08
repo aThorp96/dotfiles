@@ -16,6 +16,7 @@
 :set nohlsearch        " Don't highlight strings you're searching for
 :set formatoptions+=ro " Automatically insert the comment character when
                        " you hit <enter> (r) or o/O (o) in a block comment.
+
 :set backspace=2       " makes backspace work like you expect
 :set scrolloff=10      " leaves a buffer of ten lines below your curser until you reach the end of file.
 :set number            " Makes line number appear (Why is this not default?).
