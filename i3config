@@ -50,19 +50,39 @@ set $ws7 7
 set $ws8 8
 set $ws9 9
 set $ws0 10
+=======
+################################################################################################
+>>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
+## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
+################################################################################################
+
+exec --no-startup-id volumeicon
+#bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
+exec --no-startup-id pulseaudio
+exec --no-startup-id pa-applet
+bindsym $mod+Ctrl+m exec pavucontrol
+# Pulse Audio controls
+bindsym XF86AudioRaiseVolume exec $HOME/code/scripts/volumeUp.sh
+bindsym XF86AudioLowerVolume exec $HOME/code/scripts/volumeDown.sh
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
+
+################################################################################################
+
+# Screen brightness controls
+# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
+# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
 ################################################################################################
 #################################### Launch Applications #######################################
 ################################################################################################
 
-bindsym $mod+Return exec $TERM			            # Launch Terminal
+bindsym $mod+F3 exec pcmanfm
 bindsym $mod+d exec --no-startup-id dmenu_recency	# Launch D-Menu
 bindsym $mod+z exec --no-startup-id morc_menu		# Launch Visual Menu
 bindsym $mod+shift+w exec fire          			# Launch Firefox
 bindsym $mod+Shift+Return exec $TERM -e rover		# Launch Rover
 bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 bindsym $mod+F3 exec pcmanfm
-bindsym $mod+Shift+F3 exec gksu pcmanfm
 bindsym $mod+F5 exec terminal -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill compton
 bindsym $mod+Ctrl+t exec --no-startup-id compton -b
@@ -412,6 +432,7 @@ client.background       $i3_background
 #############################
 ### settings for i3-gaps: ###
 #############################
+
 # Set inner/outer gaps
 gaps inner 4
 gaps outer 2
@@ -433,7 +454,6 @@ set $mode_gaps Gaps: (o) outer, (i) inner
 set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
 set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
 bindsym $mod+Shift+g mode "$mode_gaps"
-
 
 mode "$mode_gaps" {
         bindsym o      mode "$mode_gaps_outer"
