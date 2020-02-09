@@ -52,16 +52,26 @@ hook global WinCreate .*\.tex %{
 	colorscheme gruvbox-light
 }
 
-#-Golang
-hook global WinCreate .*\.go %{
-    echo -debug "Go mode"
-    go-enable-autocomplete
-    map buffer user ? :go-doc-info<ret>
-    map buffer user j :go-jump<ret>
+# configure plug.kak
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+plug "ul/kak-lsp" do %{
+    cargo install --locked --force --path .
+    echo DONE
 }
 
-hook global BufWritePre .*\.go %{
-    go-format
+#-Golang
+plug "golang/tools" noload do %{
+    env --chdir=$HOME GO111MODULE=on go get -v golang.org/x/tools/gopls@latest
+    echo DONE
+}
+
+hook global WinSetOption filetype=go %{
+    lsp-enable-window
+    lsp-auto-hover-enable
+    lsp-auto-signature-help-enable
+    hook -group gofmt buffer BufWritePre .* %{
+        go-format -use-goimports
+    }
 }
 
 #-Python
