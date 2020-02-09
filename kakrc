@@ -75,12 +75,9 @@ hook global WinCreate .*\.tex %{
 	add-highlighter buffer/ wrap -word -indent 
 }
 
-<<<<<<< HEAD
-=======
 hook global BufWritePre .*\.tex %{
 	spell
 }
->>>>>>> dba4d64 (Add nice things to the kakrc)
 #-Golang
 hook global WinCreate .*\.go %{
     echo -debug "Go mode"
@@ -94,19 +91,14 @@ hook global BufWritePre .*\.go %{
 }
 
 #-Python
-<<<<<<< HEAD
 hook global WinSetOption filetype='python' %{
 	addhl buffer/ show-whitespaces
-=======
-hook global WinSetOption filetype=python %{
->>>>>>> dba4d64 (Add nice things to the kakrc)
+    colorscheme desertex
     hook global InsertChar \t %{ exec -draft -itersel h@ }
 	jedi-enable-autocomplete
 	lint-enable
-	addhl buffer/ show-whitespaces
-	set-option buffer lintcmd 'python -m pylint'
-	set-option buffer formatcmd 'black -q  -'
-	colorscheme gruvbox
+	set-option window lintcmd 'python -m pylint'
+	set-option window formatcmd 'black -q  -'
 }
 
 #	- Format on write
@@ -148,6 +140,9 @@ hook global WinCreate .*\.dat %{
     colorscheme gruvbox
 }
 hook global WinCreate .*\.ledger %{
-    colorscheme gruvbox
+    set buffer filetype ledger
+}
+hook global WinCreate .*\.journal %{
+    set buffer filetype ledger
 }
 
