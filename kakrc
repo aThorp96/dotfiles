@@ -72,6 +72,13 @@ hook global WinCreate .*\.yaml %{
 	addhl buffer/ show-whitespaces
 }
 
+hook global WinCreate .*\.yml %{
+    set global tabstop 2
+    set global indentwidth 2
+    hook global InsertChar \t %{ exec -draft -itersel h@ }
+	addhl buffer/ show-whitespaces
+}
+
 #-C
 hook global WinSetOption filetype=c %{
     clang-enable-autocomplete
