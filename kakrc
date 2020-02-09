@@ -43,7 +43,13 @@ tabnew -params .. -command-completion %{
 
 #-Markdown
 hook global WinCreate .*\.md %{ 
-	add-highlighter global wrap -word -indent 
+	add-highlighter global/ wrap -word -indent 
+}
+
+#-LaTeX
+hook global WinCreate .*\.tex %{ 
+	add-highlighter buffer/ wrap -word -indent
+	colorscheme gruvbox-light
 }
 
 #-Golang
@@ -60,10 +66,10 @@ hook global BufWritePre .*\.go %{
 
 #-Python
 hook global WinSetOption filetype='python' %{
+	addhl buffer/ show-whitespaces
     hook global InsertChar \t %{ exec -draft -itersel h@ }
 	jedi-enable-autocomplete
 	lint-enable
-	addhl buffer/ show-whitespaces
 	set-option window lintcmd 'python -m pylint'
 	set-option window formatcmd 'black -q  -'
     colorscheme cosy-gruvbox
@@ -119,6 +125,9 @@ hook global WinCreate .*\.dat %{
     colorscheme gruvbox
 }
 hook global WinCreate .*\.ledger %{
-    colorscheme gruvbox
+    set buffer filetype ledger
+}
+hook global WinCreate .*\.journal %{
+    set buffer filetype ledger
 }
 

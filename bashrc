@@ -106,7 +106,8 @@ alias eclipse='/home/awildthorp/eclipse/eclipse'
 alias k='kak'
 alias v='vim'
 alias vir='vim -R'
-alias cal='calcurse'
+alias today='date +%Y-%m-%D'
+# alias cal='calcurse'
 alias led='ledger -f main.ledger'
 alias pip='pip3'
 
@@ -137,9 +138,10 @@ fi
 # Set env variables
 export EDITOR=/bin/vim 
 export PATH=$PATH:/usr/
-# export GOPATH=$HOME/code/go
-# export GOGIT=$GOPATH/src/github.com/aThorp96/
-# export PATH=$PATH:$GOPATH/bin
+export PATH=$HOME/.local/bin:$PATH
+export GOPATH=$HOME/code/go
+export PATH=$GOPATH/bin:$PATH
+export PATH=/usr/local/go/bin:$PATH
 
 if ! pgrep -u "$USER" ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
@@ -148,6 +150,9 @@ fi
 if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval "$(<~/.ssh-agent-thing)" > /dev/null
 fi
+
+# Source Z
+. /home/aht/builds/z/z.sh
 
 #Run fish
 #fish

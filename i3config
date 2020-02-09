@@ -2,7 +2,7 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 # Set mod key (Mod1=<Alt>, Mod4=<Super>)
-set $mod Mod4
+set $mod Mod1
 exec setxkbmap -option altwin:swap_alt_win
 
 # set default desktop layout (default is tiling)
@@ -34,7 +34,7 @@ bindsym $mod+Shift+q kill
 #################################### Environment Variables #####################################
 ################################################################################################
 
-set $TERM st
+set $TERM gnome-shell
 
 # Workspace names
 # to display names or symbols instead of plain workspace numbers you can use
@@ -50,9 +50,7 @@ set $ws7 7
 set $ws8 8
 set $ws9 9
 set $ws0 10
-=======
 ################################################################################################
->>>>>>> d42b260ae18a8708dc3b9b1b0759f4b2c6487bbe
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
 ################################################################################################
 
@@ -330,45 +328,15 @@ exec --no-startup-id xautolock -time 10 -locker blurlock
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 
-# Color palette used for the terminal ( ~/.extend.Xresources file )
-# Colors are gathered based on the documentation:
-# https://i3wm.org/docs/userguide.html#xresources
-# Change the variable name at the place you want to match the color
-# of your terminal like this:
-# [example]
-# If you want your bar to have the same background color as your 
-# terminal background change the line 362 from:
-# background  $i3_background
-# to:
-# background $term_background
-# Same logic applied to everything else.
-set_from_resource $term_background background
-set_from_resource $term_foreground foreground
-set_from_resource $term_color0     color0
-set_from_resource $term_color1     color1
-set_from_resource $term_color2     color2
-set_from_resource $term_color3     color3
-set_from_resource $term_color4     color4
-set_from_resource $term_color5     color5
-set_from_resource $term_color6     color6
-set_from_resource $term_color7     color7
-set_from_resource $term_color8     color8
-set_from_resource $term_color9     color9
-set_from_resource $term_color10    color10
-set_from_resource $term_color11    color11
-set_from_resource $term_color12    color12
-set_from_resource $term_color13    color13
-set_from_resource $term_color14    color14
-set_from_resource $term_color15    color15
-
 # Color palette used for i3 
 # Variables are set based on the documentation:
 # https://i3wm.org/dovs/userguide.html#variables
 # Changing the value of one of the variables will
 # effect all the areas with the same color.
-set $i3_background      $term_background
-set $i3_text            $term_color0
-set $i3_separator       $term_foreground
+set $i3_background      #000000
+set $i3_foreground      #000000
+set $i3_text            #ffffff
+set $i3_separator       #0000ff
 set $i3_color1          $term_color1
 set $i3_color2          $term_color2
 set $i3_color3          $term_color3
@@ -402,18 +370,18 @@ bar {
 	font xft:Noto Sans 10.5
 	strip_workspace_numbers yes
 
-	colors {
-        background $term_background
-        statusline $term_foreground
-        separator  $i3_separator
-
-#                           border          backgr.             text
-        focused_workspace   $i3_color15     $term_foreground    $term_background
-        active_workspace    $i3_color7      $term_background    $i3_color5
-        inactive_workspace  $i3_color7      $term_background    $i3_color6
-        binding_mode        $i3_color7      $term_background    $i3_text
-        urgent_workspace    $i3_color7      $i3_color5          $i3_color7
-    }
+#	colors {
+#        background $term_background
+#        statusline $term_foreground
+#        separator  $i3_separator
+#
+##                           border          backgr.             text
+#        focused_workspace   $i3_color15     $term_foreground    $term_background
+#        active_workspace    $i3_color7      $term_background    $i3_color5
+#        inactive_workspace  $i3_color7      $term_background    $i3_color6
+#        binding_mode        $i3_color7      $term_background    $i3_text
+#        urgent_workspace    $i3_color7      $i3_color5          $i3_color7
+#    }
 }
 
 # hide/unhide i3status bar
@@ -421,9 +389,9 @@ bindsym $mod+m bar mode toggle
 
 # Theme colors
 # class                 border              backgr.     text        indic.      child_border
-client.focused          $term_foreground    $i3_color8  $i3_color5  $term_foreground
-client.focused_inactive $term_background    $i3_color9  $i3_color4  $i3_color10
-client.unfocused        $term_background    $i3_color9  $i3_color4  $i3_color10
+client.focused          $i3_foreground    $i3_color8  $i3_color5  $i3_foreground
+client.focused_inactive $i3_background    $i3_color9  $i3_color4  $i3_color10
+client.unfocused        $i3_background    $i3_color9  $i3_color4  $i3_color10
 client.urgent           $i3_color13         $i3_color12 $i3_color4  $i3_color14
 client.placeholder      $i3_color15         $i3_color17 $i3_color16 $i3_color15 $i3_color17
 
@@ -434,8 +402,8 @@ client.background       $i3_background
 #############################
 
 # Set inner/outer gaps
-gaps inner 4
-gaps outer 2
+# gaps inner 4
+# gaps outer 2
 
 # Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
 # gaps inner|outer current|all set|plus|minus <px>
