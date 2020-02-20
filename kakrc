@@ -20,6 +20,24 @@ set global scrolloff 999,0
 add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
 add-highlighter global/ show-matching
 
+##########################
+#	Homebrew commands
+##########################
+define-command -docstring "vsplit [<commands>]: split tmux vertically" \
+vsplit -params .. -command-completion %{
+        tmux-terminal-horizontal kak -c %val{session} -e "%arg{@}"
+}
+
+define-command -docstring "split [<commands>]: split tmux horizontally" \
+split -params .. -command-completion %{
+        tmux-terminal-vertical kak -c %val{session} -e "%arg{@}"
+}
+
+define-command -docstring "tabnew [<commands>]: create new tmux window" \
+tabnew -params .. -command-completion %{
+        tmux-terminal-window kak -c %val{session} -e "%arg{@}"
+}
+
 # Type specific hooks (Thanks @whereswaldon )
 ##############################################
 
@@ -41,13 +59,14 @@ hook global BufWritePre .*\.go %{
 }
 
 #-Python
-hook global WinSetOption filetype=python %{
+hook global WinSetOption filetype='python' %{
     hook global InsertChar \t %{ exec -draft -itersel h@ }
 	jedi-enable-autocomplete
 	lint-enable
 	addhl buffer/ show-whitespaces
 	set-option window lintcmd 'python -m pylint'
 	set-option window formatcmd 'black -q  -'
+    colorscheme cosy-gruvbox
 }
 
 #	- Format on write
@@ -65,6 +84,9 @@ hook global WinCreate .*\.json %{
 	addhl buffer/ show-whitespaces
 }
 
+hook global WinCreate .*\.vue %{
+    set buffer filetype javascript
+}
 hook global WinCreate .*\.yaml %{
     set global tabstop 2
     set global indentwidth 2
@@ -81,6 +103,7 @@ hook global WinCreate .*\.yml %{
 
 #-C
 hook global WinSetOption filetype=c %{
+    colorscheme cozy-gruvbox
     clang-enable-autocomplete
     clang-enable-diagnostics
     hook buffer BufWritePre .* %{
