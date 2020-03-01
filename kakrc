@@ -140,9 +140,6 @@ hook global WinCreate .*\.dat %{
     colorscheme gruvbox
 }
 hook global WinCreate .*\.ledger %{
-    set buffer filetype ledger
-}
-hook global WinCreate .*\.journal %{
-    set buffer filetype ledger
+    colorscheme gruvbox
 }
 
