@@ -1,5 +1,6 @@
 # Mouse navigation
 set global ui_options ncurses_enable_mouse=false
+colorscheme default
 
 # Set tab length to 4 characters
 set global tabstop 4
@@ -64,40 +65,48 @@ plug "abuffseagull/kakoune-discord" do %{ cargo install --path . --force } %{
 ##############################################
 
 #-Markdown
-hook global WinCreate .*\.md %{ 
-	add-highlighter global/ wrap -word -indent 
+hook global WinSetOption filetype=markdown %{
+    colorscheme gruvbox
+	add-highlighter buffer/ wrap -word -indent 
 }
 
-#-LaTeX
-hook global WinCreate .*\.tex %{ 
-	add-highlighter buffer/ wrap -word -indent
-	colorscheme gruvbox-light
+hook global WinCreate .*\.tex %{
+    colorscheme gruvbox
+	add-highlighter buffer/ wrap -word -indent 
 }
 
+<<<<<<< HEAD
+=======
+hook global BufWritePre .*\.tex %{
+	spell
+}
+>>>>>>> dba4d64 (Add nice things to the kakrc)
 #-Golang
-plug "golang/tools" noload do %{
-    env --chdir=$HOME GO111MODULE=on go get -v golang.org/x/tools/gopls@latest
-    echo DONE
+hook global WinCreate .*\.go %{
+    echo -debug "Go mode"
+    go-enable-autocomplete
+    map buffer user ? :go-doc-info<ret>
+    map buffer user j :go-jump<ret>
 }
 
-hook global WinSetOption filetype=go %{
-    lsp-enable-window
-    lsp-auto-hover-enable
-    lsp-auto-signature-help-enable
-    hook -group gofmt buffer BufWritePre .* %{
-        go-format -use-goimports
-    }
+hook global BufWritePre .*\.go %{
+    go-format
 }
 
 #-Python
+<<<<<<< HEAD
 hook global WinSetOption filetype='python' %{
 	addhl buffer/ show-whitespaces
+=======
+hook global WinSetOption filetype=python %{
+>>>>>>> dba4d64 (Add nice things to the kakrc)
     hook global InsertChar \t %{ exec -draft -itersel h@ }
 	jedi-enable-autocomplete
 	lint-enable
-	set-option window lintcmd 'python -m pylint'
-	set-option window formatcmd 'black -q  -'
-    colorscheme cosy-gruvbox
+	addhl buffer/ show-whitespaces
+	set-option buffer lintcmd 'python -m pylint'
+	set-option buffer formatcmd 'black -q  -'
+	colorscheme gruvbox
 }
 
 #	- Format on write
@@ -115,17 +124,7 @@ hook global WinCreate .*\.json %{
 	addhl buffer/ show-whitespaces
 }
 
-hook global WinCreate .*\.vue %{
-    set buffer filetype javascript
-}
 hook global WinCreate .*\.yaml %{
-    set global tabstop 2
-    set global indentwidth 2
-    hook global InsertChar \t %{ exec -draft -itersel h@ }
-	addhl buffer/ show-whitespaces
-}
-
-hook global WinCreate .*\.yml %{
     set global tabstop 2
     set global indentwidth 2
     hook global InsertChar \t %{ exec -draft -itersel h@ }
@@ -134,7 +133,6 @@ hook global WinCreate .*\.yml %{
 
 #-C
 hook global WinSetOption filetype=c %{
-    colorscheme cozy-gruvbox
     clang-enable-autocomplete
     clang-enable-diagnostics
     hook buffer BufWritePre .* %{
@@ -150,9 +148,6 @@ hook global WinCreate .*\.dat %{
     colorscheme gruvbox
 }
 hook global WinCreate .*\.ledger %{
-    set buffer filetype ledger
-}
-hook global WinCreate .*\.journal %{
-    set buffer filetype ledger
+    colorscheme gruvbox
 }
 
