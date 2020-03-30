@@ -143,16 +143,10 @@ export GOPATH=$HOME/code/go
 export PATH=$GOPATH/bin:$PATH
 export PATH=/usr/local/go/bin:$PATH
 
-if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-    ssh-agent > ~/.ssh-agent-thing
-    ssh-add -t 1h
-fi
 if [[ "$SSH_AGENT_PID" == "" ]]; then
     eval "$(<~/.ssh-agent-thing)" > /dev/null
 fi
 
 # Source Z
-. /home/aht/builds/z/z.sh
+. $HOME/builds/z/z.sh
 
-#Run fish
-#fish

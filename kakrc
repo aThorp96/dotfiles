@@ -38,6 +38,28 @@ tabnew -params .. -command-completion %{
         tmux-terminal-window kak -c %val{session} -e "%arg{@}"
 }
 
+############
+# Plugins
+############
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+
+plug "ul/kak-lsp" do %{
+    cargo install --locked --force --path .
+    echo DONE
+}
+
+plug "ABuffSeagull/kakoune-vue"
+
+plug "andreyorst/fzf.kak"
+map global normal <c-f> ': fzf-mode<ret>'
+
+plug "Anfid/cosy-gruvbox.kak" theme
+
+plug "abuffseagull/kakoune-discord" do %{ cargo install --path . --force } %{
+      discord-presence-enable
+}
+
+##############################################
 # Type specific hooks (Thanks @whereswaldon )
 ##############################################
 
@@ -50,13 +72,6 @@ hook global WinCreate .*\.md %{
 hook global WinCreate .*\.tex %{ 
 	add-highlighter buffer/ wrap -word -indent
 	colorscheme gruvbox-light
-}
-
-# configure plug.kak
-source "%val{config}/plugins/plug.kak/rc/plug.kak"
-plug "ul/kak-lsp" do %{
-    cargo install --locked --force --path .
-    echo DONE
 }
 
 #-Golang
