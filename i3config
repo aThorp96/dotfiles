@@ -2,23 +2,23 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 # Set mod key (Mod1=<Alt>, Mod4=<Super>)
-set $mod Mod1
+set $mod Mod4
 exec setxkbmap -option altwin:swap_alt_win
 
 # set default desktop layout (default is tiling)
 # workspace_layout tabbed <stacking|tabbed>
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-new_window pixel 1
+new_window pixel 5
 new_float normal
 
 # Hide borders
-hide_edge_borders none
+#hide_edge_borders none
 
 # change borders
-bindsym $mod+u border none
-bindsym $mod+y border pixel 1
-bindsym $mod+n border normal
+bindsym $mod+n border none
+bindsym $mod+Shift+d border pixel 3
+bindsym $mod+Shift+t border normal
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -34,14 +34,14 @@ bindsym $mod+Shift+q kill
 #################################### Environment Variables #####################################
 ################################################################################################
 
-set $TERM gnome-shell
+set $TERM gnome-terminal
 
 # Workspace names
 # to display names or symbols instead of plain workspace numbers you can use
 # something like: set $ws1 1:mail
 #                 set $ws2 2:
 set $ws1 "1"
-set $ws2 2
+set $ws2 "2"
 set $ws3 3
 set $ws4 4
 set $ws5 5
@@ -50,37 +50,18 @@ set $ws7 7
 set $ws8 8
 set $ws9 9
 set $ws0 10
-################################################################################################
-## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
-################################################################################################
-
-exec --no-startup-id volumeicon
-#bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
-exec --no-startup-id pulseaudio
-exec --no-startup-id pa-applet
-bindsym $mod+Ctrl+m exec pavucontrol
-# Pulse Audio controls
-bindsym XF86AudioRaiseVolume exec $HOME/code/scripts/volumeUp.sh
-bindsym XF86AudioLowerVolume exec $HOME/code/scripts/volumeDown.sh
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
-
-################################################################################################
-
-# Screen brightness controls
-# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
-# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
 ################################################################################################
 #################################### Launch Applications #######################################
 ################################################################################################
 
-bindsym $mod+F3 exec pcmanfm
-bindsym $mod+d exec --no-startup-id dmenu_recency	# Launch D-Menu
+bindsym $mod+Return exec $TERM						# Launch Terminal
+bindsym $mod+d exec --no-startup-id dmenu_run		# Launch D-Menu
 bindsym $mod+z exec --no-startup-id morc_menu		# Launch Visual Menu
-bindsym $mod+shift+w exec fire          			# Launch Firefox
-bindsym $mod+Shift+Return exec $TERM -e rover		# Launch Rover
+bindsym $mod+shift+w exec firefox					# Launch Firefox
 bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 bindsym $mod+F3 exec pcmanfm
+bindsym $mod+Shift+F3 exec gksu pcmanfm
 bindsym $mod+F5 exec terminal -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill compton
 bindsym $mod+Ctrl+t exec --no-startup-id compton -b
@@ -88,7 +69,6 @@ bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart du
 bindsym Print exec --no-startup-id i3-scrot
 bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
 bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
-bindsym $mod+Shift+h exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
 ################################################################################################
@@ -109,8 +89,8 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute s
 ################################################################################################
 
 # Screen brightness controls
-# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
-# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
+bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
+bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
 ################################################################################################
 
@@ -142,12 +122,13 @@ bindsym $mod+Shift+Right move right
 # workspace back and forth (with/without active container)
 workspace_auto_back_and_forth yes
 bindsym $mod+b workspace back_and_forth
+bindsym $mod+Tab workspace back_and_forth
 bindsym $mod+Shift+b move container to workspace back_and_forth; workspace back_and_forth
 
 # split orientation
 # Uncomment if you want notifications for tiling change
-#bindsym $mod+h split h;exec notify-send 'tile horizontally'
-#bindsym $mod+v split v;exec notify-send 'tile vertically'
+bindsym $mod+h split h
+bindsym $mod+v split v
 bindsym $mod+q split toggle
 
 # toggle fullscreen mode for the focused container
@@ -239,8 +220,6 @@ for_window [class="GParted"] floating enable border normal
 for_window [title="i3_help"] floating enable sticky enable border normal
 for_window [class="Lightdm-gtk-greeter-settings"] floating enable
 for_window [class="Lxappearance"] floating enable sticky enable border normal
-for_window [class="Manjaro-hello"] floating enable
-for_window [class="Manjaro Settings Manager"] floating enable border normal
 for_window [title="MuseScore: Play Panel"] floating enable
 for_window [class="Nitrogen"] floating enable sticky enable border normal
 for_window [class="Oblogout"] fullscreen enable
@@ -319,8 +298,6 @@ exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 #exec --no-startup-id nitrogen --set-scaled --random; sleep 1; compton -b
 #exec --no-startup-id manjaro-hello
 exec --no-startup-id nm-applet
-exec --no-startup-id xfce4-power-manager
-exec --no-startup-id pamac-tray
 exec --no-startup-id clipit
 # exec --no-startup-id blueman-applet
 # exec_always --no-startup-id sbxkb
@@ -333,27 +310,28 @@ exec_always --no-startup-id fix_xcursor
 # https://i3wm.org/dovs/userguide.html#variables
 # Changing the value of one of the variables will
 # effect all the areas with the same color.
+set $i3_foreground      #80a5ad
 set $i3_background      #000000
-set $i3_foreground      #000000
-set $i3_text            #ffffff
-set $i3_separator       #0000ff
-set $i3_color1          $term_color1
-set $i3_color2          $term_color2
-set $i3_color3          $term_color3
-set $i3_color4          $term_color4
-set $i3_color5          $term_color5
-set $i3_color6          $term_color6
-set $i3_color7          $term_color7
-set $i3_color8          $term_color8
-set $i3_color9          $term_color9
-set $i3_color10         $term_color10
-set $i3_color11         $term_color11
-set $i3_color12         $term_color12
-set $i3_color13         $term_color13
-set $i3_color14         $term_color14
-set $i3_color15         $term_color15
-set $i3_color16         $term_color16
-set $i3_color17         $term_color17
+set $i3_text            #000000
+set $i3_separator       #ffffff
+set $i3_color1          #00758F
+set $i3_color2          #0000FF
+set $i3_color3          #00FF00
+set $i3_color4          #FF0000
+set $i3_color5          #880000
+set $i3_color6          #008800
+set $i3_color7          #000088
+set $i3_color8          #00FFFF
+set $i3_color9          #FFFF00
+set $i3_color10         #FF00FF
+set $i3_color11         #888800
+set $i3_color12         #008888
+set $i3_color13         #880088
+set $i3_color14         #f0f0f0
+set $i3_color15         #0f0f0f
+set $i3_color16         #808080
+set $i3_color17         #080808
+set $i3_active			$i3_color1
 
 # Start i3bar to display a workspace bar (plus the system information i3status if available)
 bar {
@@ -370,40 +348,39 @@ bar {
 	font xft:Noto Sans 10.5
 	strip_workspace_numbers yes
 
-#	colors {
-#        background $term_background
-#        statusline $term_foreground
-#        separator  $i3_separator
-#
-##                           border          backgr.             text
-#        focused_workspace   $i3_color15     $term_foreground    $term_background
-#        active_workspace    $i3_color7      $term_background    $i3_color5
-#        inactive_workspace  $i3_color7      $term_background    $i3_color6
-#        binding_mode        $i3_color7      $term_background    $i3_text
-#        urgent_workspace    $i3_color7      $i3_color5          $i3_color7
-#    }
+	colors {
+        background $i3_background
+        statusline $i3_foreground
+        separator  $i3_separator
+
+#                           border     		backgr.             text
+        focused_workspace   $i3_color1		$i3_foreground		$i3_background
+        active_workspace    $i3_color7 		$i3_background    	$i3_color5
+        inactive_workspace  $i3_color7 		$i3_background    	$i3_color6
+        binding_mode        $i3_color7 		$i3_background    	$i3_text
+        urgent_workspace    $i3_color7 		$i3_color5			$i3_color7
+    }
 }
 
 # hide/unhide i3status bar
 bindsym $mod+m bar mode toggle
 
 # Theme colors
-# class                 border              backgr.     text        indic.      child_border
-client.focused          $i3_foreground    $i3_color8  $i3_color5  $i3_foreground
-client.focused_inactive $i3_background    $i3_color9  $i3_color4  $i3_color10
-client.unfocused        $i3_background    $i3_color9  $i3_color4  $i3_color10
-client.urgent           $i3_color13         $i3_color12 $i3_color4  $i3_color14
-client.placeholder      $i3_color15         $i3_color17 $i3_color16 $i3_color15 $i3_color17
+# class                 border              backgr.     	text        indic.      child_border
+client.focused          $i3_color1			$i3_foreground 	$i3_color1  $i3_separator
+client.focused_inactive $i3_background		$i3_color1		$i3_color4  $i3_separator
+client.unfocused        $i3_background		$i3_color1		$i3_color4  $i3_separator
+client.urgent           $i3_color13			$i3_color12 	$i3_color4  $i3_color14
+client.placeholder      $i3_color15			$i3_color17 	$i3_color16 $i3_color15 $i3_color17
 
 client.background       $i3_background
 
 #############################
 ### settings for i3-gaps: ###
 #############################
-
 # Set inner/outer gaps
-# gaps inner 4
-# gaps outer 2
+#gaps inner 4
+#gaps outer 2
 
 # Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
 # gaps inner|outer current|all set|plus|minus <px>
@@ -418,38 +395,39 @@ client.background       $i3_background
 #smart_borders no
 
 # Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or 0 (remove gaps for current workspace). If you also press Shift with these keys, the change will be global for all workspaces.
-set $mode_gaps Gaps: (o) outer, (i) inner
-set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
-set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
-bindsym $mod+Shift+g mode "$mode_gaps"
-
-mode "$mode_gaps" {
-        bindsym o      mode "$mode_gaps_outer"
-        bindsym i      mode "$mode_gaps_inner"
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-mode "$mode_gaps_inner" {
-        bindsym plus  gaps inner current plus 5
-        bindsym minus gaps inner current minus 5
-        bindsym 0     gaps inner current set 0
-
-        bindsym Shift+plus  gaps inner all plus 5
-        bindsym Shift+minus gaps inner all minus 5
-        bindsym Shift+0     gaps inner all set 0
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-mode "$mode_gaps_outer" {
-        bindsym plus  gaps outer current plus 5
-        bindsym minus gaps outer current minus 5
-        bindsym 0     gaps outer current set 0
-
-        bindsym Shift+plus  gaps outer all plus 5
-        bindsym Shift+minus gaps outer all minus 5
-        bindsym Shift+0     gaps outer all set 0
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
+#set $mode_gaps Gaps: (o) outer, (i) inner
+#set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
+#set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
+#bindsym $mod+Shift+g mode "$mode_gaps"
+#
+#
+#mode "$mode_gaps" {
+#        bindsym o      mode "$mode_gaps_outer"
+#        bindsym i      mode "$mode_gaps_inner"
+#        bindsym Return mode "default"
+#        bindsym Escape mode "default"
+#}
+#mode "$mode_gaps_inner" {
+#        bindsym plus  gaps inner current plus 5
+#        bindsym minus gaps inner current minus 5
+#        bindsym 0     gaps inner current set 0
+#
+#        bindsym Shift+plus  gaps inner all plus 5
+#        bindsym Shift+minus gaps inner all minus 5
+#        bindsym Shift+0     gaps inner all set 0
+#
+#        bindsym Return mode "default"
+#        bindsym Escape mode "default"
+#}
+#mode "$mode_gaps_outer" {
+#        bindsym plus  gaps outer current plus 5
+#        bindsym minus gaps outer current minus 5
+#        bindsym 0     gaps outer current set 0
+#
+#        bindsym Shift+plus  gaps outer all plus 5
+#        bindsym Shift+minus gaps outer all minus 5
+#        bindsym Shift+0     gaps outer all set 0
+#
+#        bindsym Return mode "default"
+#        bindsym Escape mode "default"
+#}

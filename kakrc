@@ -17,7 +17,7 @@ addhl global/ number-lines -relative -hlcursor
 set global scrolloff 999,0
 
 # Colors and things
-# colorscheme gruvbox
+colorscheme desertex
 add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
 add-highlighter global/ show-matching
 
@@ -39,10 +39,18 @@ tabnew -params .. -command-completion %{
         tmux-terminal-window kak -c %val{session} -e "%arg{@}"
 }
 
+map -docstring "edit kakrc" global user e :e<space>~/.config/kak/kakrc<ret>
+map -docstring "source kakrc" global user s :source<space>~/.config/kak/kakrc<ret>
+
 ############
 # Plugins
 ############
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
+
+plug "golang/tools" noload do %{
+    env --chdir=$HOME GO111MODULE=on go get -v golang.org/x/tools/gopls@latest
+    echo DONE
+}
 
 plug "ul/kak-lsp" do %{
     cargo install --locked --force --path .
@@ -81,13 +89,18 @@ hook global BufWritePre .*\.tex %{
 #-Golang
 hook global WinCreate .*\.go %{
     echo -debug "Go mode"
-    go-enable-autocomplete
+	set window lintcmd 'golangci-lint run'
+    lint-enable
+    lsp-enable-window
+    lsp-auto-hover-enable
+    lsp-auto-signature-help-enable
+    hook -group gofmt buffer BufWritePre .* %{
+        go-format -use-goimports
+        lint
+    }
+    # go-enable-autocomplete
     map buffer user ? :go-doc-info<ret>
     map buffer user j :go-jump<ret>
-}
-
-hook global BufWritePre .*\.go %{
-    go-format
 }
 
 #-Python
