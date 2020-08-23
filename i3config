@@ -2,7 +2,7 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 # Set mod key (Mod1=<Alt>, Mod4=<Super>)
-set $mod Mod4
+set $mod Mod1
 exec setxkbmap -option altwin:swap_alt_win
 
 # set default desktop layout (default is tiling)
@@ -50,6 +50,25 @@ set $ws7 7
 set $ws8 8
 set $ws9 9
 set $ws0 10
+################################################################################################
+## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
+################################################################################################
+
+exec --no-startup-id volumeicon
+#bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
+exec --no-startup-id pulseaudio
+exec --no-startup-id pa-applet
+bindsym $mod+Ctrl+m exec pavucontrol
+# Pulse Audio controls
+bindsym XF86AudioRaiseVolume exec $HOME/code/scripts/volumeUp.sh
+bindsym XF86AudioLowerVolume exec $HOME/code/scripts/volumeDown.sh
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
+
+################################################################################################
+
+# Screen brightness controls
+# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
+# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
 ################################################################################################
 #################################### Launch Applications #######################################
@@ -348,18 +367,18 @@ bar {
 	font xft:Noto Sans 10.5
 	strip_workspace_numbers yes
 
-	colors {
-        background $i3_background
-        statusline $i3_foreground
-        separator  $i3_separator
-
-#                           border     		backgr.             text
-        focused_workspace   $i3_color1		$i3_foreground		$i3_background
-        active_workspace    $i3_color7 		$i3_background    	$i3_color5
-        inactive_workspace  $i3_color7 		$i3_background    	$i3_color6
-        binding_mode        $i3_color7 		$i3_background    	$i3_text
-        urgent_workspace    $i3_color7 		$i3_color5			$i3_color7
-    }
+#	colors {
+#        background $term_background
+#        statusline $term_foreground
+#        separator  $i3_separator
+#
+##                           border          backgr.             text
+#        focused_workspace   $i3_color15     $term_foreground    $term_background
+#        active_workspace    $i3_color7      $term_background    $i3_color5
+#        inactive_workspace  $i3_color7      $term_background    $i3_color6
+#        binding_mode        $i3_color7      $term_background    $i3_text
+#        urgent_workspace    $i3_color7      $i3_color5          $i3_color7
+#    }
 }
 
 # hide/unhide i3status bar
@@ -379,8 +398,8 @@ client.background       $i3_background
 ### settings for i3-gaps: ###
 #############################
 # Set inner/outer gaps
-#gaps inner 4
-#gaps outer 2
+# gaps inner 4
+# gaps outer 2
 
 # Additionally, you can issue commands with the following syntax. This is useful to bind keys to changing the gap size.
 # gaps inner|outer current|all set|plus|minus <px>
