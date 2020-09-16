@@ -20,6 +20,7 @@ set global scrolloff 999,0
 colorscheme desertex
 add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
 add-highlighter global/ show-matching
+add-highlighter shared/fold-mark column 80 PrimaryCursor
 
 ##########################
 #	Homebrew commands
@@ -146,6 +147,12 @@ hook global WinSetOption filetype=c %{
     hook buffer InsertEnd .* %{
         clang-parse
     }
+}
+
+# Aerc email client
+hook global WinCreate .*\.eml %{
+    add-highlighter window/fold-mark ref fold-mark
+    set global autoreload no
 }
 
 #-Ledger 
