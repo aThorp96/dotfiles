@@ -9,7 +9,7 @@ set global indentwidth 4
 # jk to escape
 hook global InsertChar k %{ try %{
       exec -draft hH <a-k>jk<ret> d
-        exec <esc>
+      exec <esc>
 }}
 
 # Set line numbers
@@ -118,7 +118,7 @@ hook global WinSetOption filetype='python' %{
 #	- Format on write
 hook global BufWritePre .*\.py %{
 	echo -debug "Running Black on %val{bufname}"
-	format
+#	format
 }
 
 #	- .pt files are python templated HTML
@@ -151,6 +151,11 @@ hook global WinSetOption filetype=c %{
 
 # Aerc email client
 hook global WinCreate .*\.eml %{
+    add-highlighter window/fold-mark ref fold-mark
+    set global autoreload no
+}
+
+hook global WinCreate .*COMMIT_EDITMSG %{
     add-highlighter window/fold-mark ref fold-mark
     set global autoreload no
 }
