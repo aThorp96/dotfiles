@@ -77,6 +77,7 @@ plug "abuffseagull/kakoune-discord" do %{ cargo install --path . --force } %{
 hook global WinSetOption filetype=markdown %{
     colorscheme gruvbox
 	add-highlighter buffer/ wrap -word -indent 
+    add-highlighter window/fold-mark ref fold-mark
 }
 
 hook global WinCreate .*\.tex %{
