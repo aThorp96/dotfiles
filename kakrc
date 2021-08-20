@@ -1,6 +1,5 @@
 # Mouse navigation
 set global ui_options ncurses_enable_mouse=false
-colorscheme default
 
 # Set tab length to 4 characters
 set global tabstop 4
@@ -17,7 +16,7 @@ addhl global/ number-lines -relative -hlcursor
 set global scrolloff 999,0
 
 # Colors and things
-colorscheme desertex
+colorscheme cosy-gruvbox 
 add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
 add-highlighter global/ show-matching
 add-highlighter shared/fold-mark column 80 PrimaryCursor

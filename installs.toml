@@ -1,0 +1,30 @@
+[apt]
+prefix = "sudo apt install"
+packages = [
+	"tree",
+	"nodejs",
+	"npm",
+    "suckless-tools",
+    "postgresql-client",
+    "tmux",
+    "libncurses-dev",
+    "fzf",
+    "vim",
+    "zsh",
+    "ranger",
+    "libssl-dev"
+]
+
+[node]
+prefix = "npm i"
+packages = [
+	"gsts"
+]
+
+[misc]
+prefix = ""
+packages = [
+	"kubectl",
+	"helm"
+]
+
