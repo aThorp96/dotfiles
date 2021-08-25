@@ -1,9 +1,8 @@
 [apt]
 prefix = "sudo apt install"
 packages = [
-	"tree",
-	"nodejs",
-	"npm",
+    "tree",
+    "npm",
     "suckless-tools",
     "postgresql-client",
     "tmux",
@@ -18,13 +17,13 @@ packages = [
 [node]
 prefix = "npm i"
 packages = [
-	"gsts"
+    "gsts"
 ]
 
 [misc]
 prefix = ""
 packages = [
-	"kubectl",
-	"helm"
+   "kubectl",
+   "helm"
 ]
 
