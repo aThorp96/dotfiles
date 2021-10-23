@@ -4,6 +4,18 @@
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
+
+default_tmux="base"
+if [ -z "$TMUX" ] ; then
+	# launch tmux if it isn't running
+	if tmux ls |&grep $default_tmux 2>&1 >/dev/null ; then
+		# attach to default session if it exists
+		tmux attach -t "$default_tmux"
+	else
+		tmux new-session -t "$default_tmux"
+	fi
+fi
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -72,6 +84,9 @@ plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 
+autoload -U compinit
+compinit -i
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -106,17 +121,28 @@ export PATH=$GOPATH/bin:$PATH
 export PATH=$HOME/.local/bin:$PATH
 export PATH=$HOME/bin:$PATH
 export PATH=$PATH:~/.platformio/penv/bin
+export PATH="$PATH":"$HOME/.pub-cache/bin"
 
 export ANDROID_HOME="$HOME/SDKs/Android"
 export PATH="$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
 
-source $HOME/.cargo/env
 
 # Source optional files
 declare -a optional_sources=(
-"$HOME/fzf.zsh"
+"$HOME/.cargo/env"
+"$HOME/.fzf.zsh"
 "$HOME/.plato.zsh"
+"$HOME/.zsh_aliases"
 )
 for file in ${optional_sources[@]}; do
     [ -f "$file" ] && echo "Loading $file" && source "$file"
 done
+
+if (which osascript >/dev/null); then
+	notify() {
+		osascript -e "display notification \"${1:?Notification body required}\" with title \"Shell notification\" sound name \"Bell\""
+    }
+fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+

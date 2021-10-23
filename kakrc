@@ -16,8 +16,9 @@ addhl global/ number-lines -relative -hlcursor
 set global scrolloff 999,0
 
 # Colors and things
-colorscheme gruvbox 
+colorscheme gruvbox
 add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
+add-highlighter global/ regex "( |\t)+$" 0:default+rb
 add-highlighter global/ show-matching
 add-highlighter shared/fold-mark column 80 PrimaryCursor
 
@@ -40,7 +41,11 @@ tabnew -params .. -command-completion %{
 }
 
 map -docstring "edit kakrc" global user e :e<space>~/.config/kak/kakrc<ret>
-map -docstring "source kakrc" global user s :source<space>~/.config/kak/kakrc<ret>
+map -docstring "reload kakrc" global user r :source<space>~/.config/kak/kakrc<ret>
+map -docstring "lsp mode" global user l ':enter-user-mode lsp<ret>'
+map -docstring "spell" global user s :spell<ret>
+map -docstring "clear spell" global user c :spell-clear<ret>
+map -docstring "system-yank" global user y |pbcopy&&pbpaste<ret>
 
 ############
 # Plugins
@@ -48,7 +53,7 @@ map -docstring "source kakrc" global user s :source<space>~/.config/kak/kakrc<re
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
 plug "golang/tools" noload do %{
-    env --chdir=$HOME GO111MODULE=on go get -v golang.org/x/tools/gopls@latest
+    go install -v golang.org/x/tools/gopls@latest
     echo DONE
 }
 
@@ -64,9 +69,6 @@ map global normal <c-f> ': fzf-mode<ret>'
 
 plug "Anfid/cosy-gruvbox.kak" theme
 
-plug "abuffseagull/kakoune-discord" do %{ cargo install --path . --force } %{
-      discord-presence-enable
-}
 
 ##############################################
 # Type specific hooks (Thanks @whereswaldon )
@@ -87,17 +89,16 @@ hook global WinCreate .*\.tex %{
 hook global BufWritePre .*\.tex %{
 	spell
 }
+
 #-Golang
-hook global WinCreate .*\.go %{
+hook global WinSetOption filetype=go %{
     echo -debug "Go mode"
 	set window lintcmd 'golangci-lint run'
-    lint-enable
     lsp-enable-window
     lsp-auto-hover-enable
     lsp-auto-signature-help-enable
     hook -group gofmt buffer BufWritePre .* %{
-        go-format -use-goimports
-        lint
+        lsp-formatting-sync
     }
     # go-enable-autocomplete
     map buffer user ? :go-doc-info<ret>
@@ -134,7 +135,7 @@ hook global WinCreate .*\.yaml %{
     set global tabstop 2
     set global indentwidth 2
     hook global InsertChar \t %{ exec -draft -itersel h@ }
-	addhl buffer/ show-whitespaces
+    addhl buffer/ show-whitespaces
 }
 
 #-C
@@ -148,6 +149,33 @@ hook global WinSetOption filetype=c %{
         clang-parse
     }
 }
+
+#-Dart
+hook global WinSetOption filetype=dart %{
+    echo -debug "Dart mode"
+    # Set tab length to 2 space characters
+    set global tabstop 2
+    set global indentwidth 2
+    hook global InsertChar \t %{ exec -draft -itersel h@ }
+    lsp-enable-window
+    lsp-auto-hover-enable
+    lsp-auto-signature-help-enable
+
+  	set-option window formatcmd 'dartfmt -l 160'
+}
+
+hook global BufWritePre filetype=dart %{
+  format
+}
+
+# Protobuf
+hook global WinSetOption filetype=protobuf %{
+    # Set tab length to 2 space characters
+    set global tabstop 2
+    set global indentwidth 2
+    hook global InsertChar \t %{ exec -draft -itersel h@ }
+}
+
 
 # Aerc email client
 hook global WinCreate .*\.eml %{
