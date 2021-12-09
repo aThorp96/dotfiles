@@ -145,5 +145,9 @@ if (which osascript >/dev/null); then
     }
 fi
 
+bak() {
+	mv "${1:?Must provide file to backup}{,.bak}"
+}
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

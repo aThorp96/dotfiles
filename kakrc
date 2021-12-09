@@ -44,8 +44,9 @@ map -docstring "edit kakrc" global user e :e<space>~/.config/kak/kakrc<ret>
 map -docstring "reload kakrc" global user r :source<space>~/.config/kak/kakrc<ret>
 map -docstring "lsp mode" global user l ':enter-user-mode lsp<ret>'
 map -docstring "spell" global user s :spell<ret>
-map -docstring "clear spell" global user c :spell-clear<ret>
+map -docstring "clear spell" global user C :spell-clear<ret>
 map -docstring "system-yank" global user y |pbcopy&&pbpaste<ret>
+map -docstring "comment line" global user c :comment-line<ret>
 
 ############
 # Plugins
