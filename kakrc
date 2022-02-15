@@ -16,7 +16,7 @@ addhl global/ number-lines -relative -hlcursor
 set global scrolloff 999,0
 
 # Colors and things
-colorscheme gruvbox
+colorscheme gruvbox-dark
 add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
 add-highlighter global/ regex "( |\t)+$" 0:default+rb
 add-highlighter global/ show-matching
