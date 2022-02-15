@@ -50,6 +50,7 @@ map -docstring "system-yank" global user y |pbcopy&&pbpaste<ret>
 ############
 # Plugins
 ############
+# source "%val{config}/plugins/uxn.kak/tal.kak"
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
 plug "golang/tools" noload do %{
@@ -63,6 +64,10 @@ plug "ul/kak-lsp" do %{
 }
 
 plug "ABuffSeagull/kakoune-vue"
+
+plug "https://git.sr.ht/~athorp96/uxntal.kak"
+
+plug "kakoune-editor/kakoune-extra-filetypes"
 
 plug "andreyorst/fzf.kak"
 map global normal <c-f> ': fzf-mode<ret>'
