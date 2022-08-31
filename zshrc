@@ -6,7 +6,7 @@ export ZSH=$HOME/.oh-my-zsh
 
 
 default_tmux="base"
-if [ -z "$TMUX" ] ; then
+if [[ -z "$TMUX" && "$TERM_PROGRAM" != "vscode" ]] ; then
 	# launch tmux if it isn't running
 	if tmux ls |&grep $default_tmux 2>&1 >/dev/null ; then
 		# attach to default session if it exists
@@ -150,4 +150,8 @@ bak() {
 }
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+if [[ -z "$(ssh-add -l | grep 'andrew@Andrews-MacBook-Pro.local')" ]]; then
+    echo "Adding SSH Key to keyring"; ssh-add ~/.ssh/id_rsa_512
+fi
 

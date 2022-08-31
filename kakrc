@@ -12,15 +12,15 @@ hook global InsertChar k %{ try %{
 }}
 
 # Set line numbers
-addhl global/ number-lines -relative -hlcursor
-set global scrolloff 999,0
+addhl global/ number-lines -hlcursor
+set global scrolloff 15,0
 
 # Colors and things
 colorscheme gruvbox-dark
 add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
 add-highlighter global/ regex "( |\t)+$" 0:default+rb
 add-highlighter global/ show-matching
-add-highlighter shared/fold-mark column 80 PrimaryCursor
+add-highlighter shared/fold-mark column 73 PrimaryCursor
 
 ##########################
 #	Homebrew commands
@@ -63,6 +63,9 @@ plug "ul/kak-lsp" do %{
     cargo install --locked --force --path .
     echo DONE
 }
+hook global WinSetOption filetype=(rust|typescript|dart) %{
+	lsp-enable-window
+}
 
 plug "ABuffSeagull/kakoune-vue"
 
@@ -75,10 +78,19 @@ map global normal <c-f> ': fzf-mode<ret>'
 
 plug "Anfid/cosy-gruvbox.kak" theme
 
+plug "https://git.sr.ht/~athorp96/uxntal.kak"
+
+plug "whereswaldon/shellcheck.kak"
 
 ##############################################
 # Type specific hooks (Thanks @whereswaldon )
 ##############################################
+#-Typescript
+hook global BufSetOption filetype=typescript %{
+    set buffer indentwidth 0
+    add-highlighter buffer/ show-whitespaces
+    lsp-auto-hover-enable
+}
 
 #-Markdown
 hook global WinSetOption filetype=markdown %{
@@ -137,7 +149,7 @@ hook global WinCreate .*\.json %{
 	addhl buffer/ show-whitespaces
 }
 
-hook global WinCreate .*\.yaml %{
+hook global BufSetOption filetype=yaml %{
     set global tabstop 2
     set global indentwidth 2
     hook global InsertChar \t %{ exec -draft -itersel h@ }
@@ -205,3 +217,12 @@ hook global WinCreate .*\.journal %{
     set buffer filetype ledger
 }
 
+hook global BufCreate filetype=sh %{
+    echo "enableing shellcheck"
+    shellcheck-enable
+}
+
+# Not sure why this doesn't work in the filetype block
+hook global WinCreate .*\.sh %{
+    add-highlighter buffer/fold-mark ref fold-mark
+}

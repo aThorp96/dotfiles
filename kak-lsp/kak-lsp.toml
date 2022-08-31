@@ -10,3 +10,8 @@ timeout = 1800 # seconds = 30 minutes
 filetypes = ["rust"]
 roots = ["Cargo.toml"]
 command = "rust-analyzer"
+
+[language.dart]
+filetypes = ["dart"]
+roots = ["pubspec.yaml"]
+command = "dart language-server"
