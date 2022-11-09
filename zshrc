@@ -123,6 +123,7 @@ export PATH=$HOME/bin:$PATH
 export PATH=$PATH:~/.platformio/penv/bin
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 export PATH="$PATH":"$HOME/code/uxn/uxn/bin"
+export PATH="$HOME/.rbenv/bin:$PATH"
 
 export ANDROID_HOME="$HOME/SDKs/Android"
 export PATH="$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"

@@ -94,14 +94,20 @@ hook global BufSetOption filetype=typescript %{
 
 #-Markdown
 hook global WinSetOption filetype=markdown %{
-    colorscheme gruvbox
+    colorscheme gruvbox-dark
 	add-highlighter buffer/ wrap -word -indent 
     add-highlighter window/fold-mark ref fold-mark
 }
 
+hook global BufSetOption filetype=gemini %{
+    echo -debug "Gemini mode"
+    colorscheme gruvbox-dark
+	add-highlighter buffer/ wrap -word -indent
+}
+
 hook global WinCreate .*\.tex %{
-    colorscheme gruvbox
-	add-highlighter buffer/ wrap -word -indent 
+    colorscheme gruvbox-dark
+	add-highlighter buffer/ wrap -word -indent
 }
 
 hook global BufWritePre .*\.tex %{
@@ -124,20 +130,21 @@ hook global WinSetOption filetype=go %{
 }
 
 #-Python
-hook global WinSetOption filetype='python' %{
+hook global WinSetOption filetype=python %{
+    echo -debug "Enabling python mode"
 	addhl buffer/ show-whitespaces
-    colorscheme desertex
     hook global InsertChar \t %{ exec -draft -itersel h@ }
 	jedi-enable-autocomplete
-	lint-enable
-	set-option window lintcmd 'python -m pylint'
+	set-option window lintcmd 'python3 -m pylint'
 	set-option window formatcmd 'black -q  -'
+	lint-enable
 }
 
 #	- Format on write
 hook global BufWritePre .*\.py %{
 	echo -debug "Running Black on %val{bufname}"
-#	format
+	lint
+    format
 }
 
 #	- .pt files are python templated HTML
@@ -208,7 +215,7 @@ hook global WinCreate .*COMMIT_EDITMSG %{
 
 #-Ledger 
 hook global WinCreate .*\.dat %{
-    colorscheme gruvbox
+    colorscheme gruvbox-dark
 }
 hook global WinCreate .*\.ledger %{
     set buffer filetype ledger
