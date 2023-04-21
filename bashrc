@@ -152,3 +152,5 @@ fi
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+. "$HOME/.cargo/env"
+source /Users/athorp/perl5/perlbrew/etc/bashrc

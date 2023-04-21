@@ -47,6 +47,8 @@ map -docstring "spell" global user s :spell<ret>
 map -docstring "clear spell" global user C :spell-clear<ret>
 map -docstring "system-yank" global user y |pbcopy&&pbpaste<ret>
 map -docstring "comment line" global user c :comment-line<ret>
+map -docstring "fzf open" global user f :fzf<ret>
+map -docstring "toggle kaktree" global user t :kaktree-toggle<ret>
 
 ############
 # Plugins
@@ -61,10 +63,20 @@ plug "golang/tools" noload do %{
 
 plug "ul/kak-lsp" do %{
     cargo install --locked --force --path .
+
+	define-command -override -hidden lsp-show-error -params 1 -docstring "Render error" %{
+	    echo -debug "kak-lsp:" %arg{1}
+	    info -markup -title "{Error}KAK-LSP Error!" "{Error}kak-lsp:" %arg{1}
+	}
+
     echo DONE
 }
-hook global WinSetOption filetype=(rust|typescript|dart) %{
+hook global WinSetOption filetype=(rust|typescript|dart|python|ruby|`python`) %{
 	lsp-enable-window
+	lsp-auto-hover-enable
+	lsp-inlay-diagnostics-enable window
+	lsp-inlay-hints-enable window
+	lsp-inlay-code-lenses-enable window
 }
 
 plug "ABuffSeagull/kakoune-vue"
@@ -82,19 +94,43 @@ plug "https://git.sr.ht/~athorp96/uxntal.kak"
 
 plug "whereswaldon/shellcheck.kak"
 
+plug "andreyorst/smarttab.kak"
+
+plug "andreyorst/kaktree" defer kaktree %{
+  set-option global kaktree_double_click_duration '0.5'
+  set-option global kaktree_indentation 1
+  map global normal <F2> ': kaktree-toggle<ret>' -docstring 'toggle filetree'
+} config %{
+  hook global WinSetOption filetype=kaktree %{
+    remove-highlighter buffer/numbers
+    remove-highlighter buffer/matching
+    remove-highlighter buffer/wrap
+    remove-highlighter buffer/show-whitespaces
+  }
+  kaktree-enable
+}
+
 ##############################################
 # Type specific hooks (Thanks @whereswaldon )
 ##############################################
 #-Typescript
-hook global BufSetOption filetype=typescript %{
-    set buffer indentwidth 0
+hook global WinSetOption filetype=typescript %{
+    set-option window lintcmd 'run() { cat "$1" |npx eslint -f unix --stdin --stdin-filename "$kak_buffile";} && run'
+    hook buffer ModeChange pop:insert:normal %{
+        lint
+    }
+
     add-highlighter buffer/ show-whitespaces
+
+    set window tabstop 2
+    set window indentwidth 2
+    expandtab
+
     lsp-auto-hover-enable
 }
 
 #-Markdown
 hook global WinSetOption filetype=markdown %{
-    colorscheme gruvbox-dark
 	add-highlighter buffer/ wrap -word -indent 
     add-highlighter window/fold-mark ref fold-mark
 }
@@ -106,7 +142,7 @@ hook global BufSetOption filetype=gemini %{
 }
 
 hook global WinCreate .*\.tex %{
-    colorscheme gruvbox-dark
+	add-highlighter buffer/ wrap -word -indent
 	add-highlighter buffer/ wrap -word -indent
 }
 
@@ -131,11 +167,22 @@ hook global WinSetOption filetype=go %{
 
 #-Python
 hook global WinSetOption filetype=python %{
-    echo -debug "Enabling python mode"
+    set-option global lsp_config %{
+            [language.python.settings._]
+            "pyls.configurationSources" = ["flake8"]
+            "pylsp.plugins.flake8.enabled" = true
+            "pylsp.plugins.pycodestyle.enabled" = false
+            "pylsp.plugins.mccabe.enabled" = false
+            "pylsp.plugins.pyflakes.enabled" = false
+    }
+
+    expandtab
+
 	addhl buffer/ show-whitespaces
-    hook global InsertChar \t %{ exec -draft -itersel h@ }
+
+    # hook global InsertChar \t %{ exec -draft -itersel h@ }
 	jedi-enable-autocomplete
-	set-option window lintcmd 'python3 -m pylint'
+	set-option window lintcmd 'python -m pylint'
 	set-option window formatcmd 'black -q  -'
 	lint-enable
 }
@@ -215,7 +262,6 @@ hook global WinCreate .*COMMIT_EDITMSG %{
 
 #-Ledger 
 hook global WinCreate .*\.dat %{
-    colorscheme gruvbox-dark
 }
 hook global WinCreate .*\.ledger %{
     set buffer filetype ledger

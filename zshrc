@@ -6,7 +6,7 @@ export ZSH=$HOME/.oh-my-zsh
 
 
 default_tmux="base"
-if [[ -z "$TMUX" && "$TERM_PROGRAM" != "vscode" ]] ; then
+if [[ -z "$TMUX" && "$TERM_PROGRAM" != "vscode" && "$TERM_PROGRAM" != "Apple_Terminal" ]] ; then
 	# launch tmux if it isn't running
 	if tmux ls |&grep $default_tmux 2>&1 >/dev/null ; then
 		# attach to default session if it exists
@@ -20,7 +20,7 @@ fi
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="gnzh"
+ZSH_THEME="3den"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -133,7 +133,7 @@ export PATH="$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-
 declare -a optional_sources=(
 "$HOME/.cargo/env"
 "$HOME/.fzf.zsh"
-"$HOME/.plato.zsh"
+"$HOME/.nexhealth.zsh"
 "$HOME/.zsh_aliases"
 )
 for file in ${optional_sources[@]}; do
@@ -152,7 +152,16 @@ bak() {
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-if [[ -z "$(ssh-add -l | grep 'andrew@Andrews-MacBook-Pro.local')" ]]; then
-    echo "Adding SSH Key to keyring"; ssh-add ~/.ssh/id_rsa_512
+if [[ -z "$(ssh-add -l | grep 'andrew.thorp')" ]]; then
+    echo "Adding SSH Key to keyring"; ssh-add ~/.ssh/id_rsa
 fi
 
+# Pyenv
+if [[ -z "$(which pyenv)" ]]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
+export PATH="/opt/homebrew/opt/ruby@3.0/bin:$PATH"
+export PATH="/opt/homebrew/opt/node@16/bin:$PATH"
+export PATH="/Users/athorp/.yarn/bin:$PATH"

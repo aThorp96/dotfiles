@@ -15,3 +15,30 @@ command = "rust-analyzer"
 filetypes = ["dart"]
 roots = ["pubspec.yaml"]
 command = "dart language-server"
+
+[language.typescript]
+filetypes = ["typescript"]
+roots = ["package.json"]
+command = "typescript-language-server"
+args = ["--stdio"]
+
+[language.ruby]
+filetypes = ["ruby"]
+roots = ["Gemfile"]
+command = "solargraph"
+args = ["stdio"]
+
+[language.python]
+filetypes = ["python"]
+roots = ["requirements.txt", "setup.py", ".git", ".hg"]
+command = "pylsp"
+offset_encoding = "utf-8"
+settings_section = "_"
+
+# [language.python.settings._]
+# pyls.configurationSources = ["flake8"]
+# pylsp.plugins.flake8.enabled = true
+# pylsp.plugins.pycodestyle.enabled = false
+# pylsp.plugins.mccabe.enabled = false
+# pylsp.plugins.pyflakes.enabled = false
+
