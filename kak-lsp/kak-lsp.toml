@@ -25,8 +25,8 @@ args = ["--stdio"]
 [language.ruby]
 filetypes = ["ruby"]
 roots = ["Gemfile"]
-command = "solargraph"
-args = ["stdio"]
+command = "bundle"
+args = ["exec", "solargraph", "stdio"]
 
 [language.python]
 filetypes = ["python"]
@@ -42,3 +42,20 @@ settings_section = "_"
 # pylsp.plugins.mccabe.enabled = false
 # pylsp.plugins.pyflakes.enabled = false
 
+# Reference
+# https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
+
+[semantic_tokens]
+faces = [
+  { face = 'documentation', token = 'comment', modifiers = ['documentation'] },
+  { face = 'comment', token = 'comment' },
+  { face = 'function', token = 'function' },
+  { face = 'keyword', token = 'keyword' },
+  { face = 'module', token = 'namespace' },
+  { face = 'operator', token = 'operator' },
+  { face = 'string', token = 'string' },
+  { face = 'type', token = 'type' },
+  { face = 'default+d', token = 'variable', modifiers = ['readonly'] },
+  { face = 'default+d', token = 'variable', modifiers = ['constant'] },
+  { face = 'variable', token = 'variable' }
+]

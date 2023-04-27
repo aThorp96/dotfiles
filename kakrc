@@ -21,9 +21,10 @@ add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE)\b 0:default+rb
 add-highlighter global/ regex "( |\t)+$" 0:default+rb
 add-highlighter global/ show-matching
 add-highlighter shared/fold-mark column 73 PrimaryCursor
+add-highlighter global/ show-whitespaces
 
 ##########################
-#	Homebrew commands
+#  Homebrew commands
 ##########################
 define-command -docstring "vsplit [<commands>]: split tmux vertically" \
 vsplit -params .. -command-completion %{
@@ -43,11 +44,12 @@ tabnew -params .. -command-completion %{
 map -docstring "edit kakrc" global user e :e<space>~/.config/kak/kakrc<ret>
 map -docstring "reload kakrc" global user r :source<space>~/.config/kak/kakrc<ret>
 map -docstring "lsp mode" global user l ':enter-user-mode lsp<ret>'
+map -docstring "next lint message" global user L :lint-next-message<ret>
 map -docstring "spell" global user s :spell<ret>
 map -docstring "clear spell" global user C :spell-clear<ret>
 map -docstring "system-yank" global user y |pbcopy&&pbpaste<ret>
 map -docstring "comment line" global user c :comment-line<ret>
-map -docstring "fzf open" global user f :fzf<ret>
+map -docstring "format" global user f :format<ret>
 map -docstring "toggle kaktree" global user t :kaktree-toggle<ret>
 
 ############
@@ -64,20 +66,30 @@ plug "golang/tools" noload do %{
 plug "ul/kak-lsp" do %{
     cargo install --locked --force --path .
 
-	define-command -override -hidden lsp-show-error -params 1 -docstring "Render error" %{
-	    echo -debug "kak-lsp:" %arg{1}
-	    info -markup -title "{Error}KAK-LSP Error!" "{Error}kak-lsp:" %arg{1}
-	}
+    define-command -override -hidden lsp-show-error -params 1 -docstring "Render error" %{
+        echo -debug "kak-lsp:" %arg{1}
+        info -markup -title "{Error}KAK-LSP Error!" "{Error}kak-lsp: %arg{1}"
+    }
 
     echo DONE
+} config %{
+    # set-option global lsp_completion_trigger "execute-keys 'h<a-h><a-k>\S[^\h\n,=;*(){}\[\]]\z<ret>'"
+
+    hook global WinSetOption filetype=(rust|typescript|dart|python|ruby|`python`) %{
+      lsp-start
+      lsp-enable-window
+      lsp-auto-hover-enable
+      lsp-inlay-diagnostics-enable window
+      # lsp-inlay-hints-enable window
+      lsp-inlay-code-lenses-enable window
+
+      set-option window lsp_hover_anchor true
+    }
+
+    hook global KakEnd .* lsp-exit
 }
-hook global WinSetOption filetype=(rust|typescript|dart|python|ruby|`python`) %{
-	lsp-enable-window
-	lsp-auto-hover-enable
-	lsp-inlay-diagnostics-enable window
-	lsp-inlay-hints-enable window
-	lsp-inlay-code-lenses-enable window
-}
+
+
 
 plug "ABuffSeagull/kakoune-vue"
 
@@ -114,46 +126,87 @@ plug "andreyorst/kaktree" defer kaktree %{
 # Type specific hooks (Thanks @whereswaldon )
 ##############################################
 #-Typescript
-hook global WinSetOption filetype=typescript %{
-    set-option window lintcmd 'run() { cat "$1" |npx eslint -f unix --stdin --stdin-filename "$kak_buffile";} && run'
+hook global BufSetOption filetype=typescript %{
+    set-option buffer lintcmd 'run() { cat "$1" | npx eslint -f unix --stdin --stdin-filename "$kak_buffile";} && run'
+    set-option buffer formatcmd "prettier --stdin-filepath=%val{buffile}"
+
     hook buffer ModeChange pop:insert:normal %{
         lint
     }
 
-    add-highlighter buffer/ show-whitespaces
+    hook buffer BufWritePre .* %{
+        lint
+    }
 
-    set window tabstop 2
-    set window indentwidth 2
+    hook buffer WinDisplay .* %{
+        lint
+    }
+
+
+    set buffer tabstop 2
+    set buffer indentwidth 2
     expandtab
 
     lsp-auto-hover-enable
 }
 
+#-Ruby
+hook global BufSetOption filetype=ruby %{
+    echo "Ruby mode"
+    set-option buffer lintcmd %{ run() { cat "${1}" | bundle exec rubocop -c .rubocop.yml --format emacs -s "${kak_buffile}" 2>&1; } && run }
+    set-option buffer formatcmd "bundle exec rubocop -x -o /dev/null -c .rubocop.yml -s '${kak_buffile}' | sed -n '2,$p'"
+
+    hook buffer ModeChange pop:insert:normal %{
+        lint
+    }
+
+    hook buffer BufWritePre .* %{
+        lint
+    }
+
+    hook buffer BufWritePost .* %{
+        git show-diff
+    }
+
+    hook buffer WinDisplay .* %{
+        lint
+    }
+
+
+    git show-diff
+    set buffer tabstop 2
+    set buffer indentwidth 2
+    expandtab
+
+    lsp-auto-hover-enable
+
+}
+
 #-Markdown
 hook global WinSetOption filetype=markdown %{
-	add-highlighter buffer/ wrap -word -indent 
+  add-highlighter buffer/ wrap -word -indent 
     add-highlighter window/fold-mark ref fold-mark
 }
 
 hook global BufSetOption filetype=gemini %{
     echo -debug "Gemini mode"
     colorscheme gruvbox-dark
-	add-highlighter buffer/ wrap -word -indent
+  add-highlighter buffer/ wrap -word -indent
 }
 
 hook global WinCreate .*\.tex %{
-	add-highlighter buffer/ wrap -word -indent
-	add-highlighter buffer/ wrap -word -indent
+  add-highlighter buffer/ wrap -word -indent
+  add-highlighter buffer/ wrap -word -indent
 }
 
 hook global BufWritePre .*\.tex %{
-	spell
+  spell
 }
 
 #-Golang
 hook global WinSetOption filetype=go %{
     echo -debug "Go mode"
-	set window lintcmd 'golangci-lint run'
+set window lintcmd 'golangci-lint run'
     lsp-enable-window
     lsp-auto-hover-enable
     lsp-auto-signature-help-enable
@@ -178,29 +231,29 @@ hook global WinSetOption filetype=python %{
 
     expandtab
 
-	addhl buffer/ show-whitespaces
+  addhl buffer/ show-whitespaces
 
     # hook global InsertChar \t %{ exec -draft -itersel h@ }
-	jedi-enable-autocomplete
-	set-option window lintcmd 'python -m pylint'
-	set-option window formatcmd 'black -q  -'
-	lint-enable
+  jedi-enable-autocomplete
+  set-option window lintcmd 'python -m pylint'
+  set-option window formatcmd 'black -q  -'
+  lint-enable
 }
 
-#	- Format on write
+#  - Format on write
 hook global BufWritePre .*\.py %{
-	echo -debug "Running Black on %val{bufname}"
-	lint
+  echo -debug "Running Black on %val{bufname}"
+  lint
     format
 }
 
-#	- .pt files are python templated HTML
+#  - .pt files are python templated HTML
 hook global WinCreate .*\.pt %{
-	set-option window filetype html
+  set-option window filetype html
 }
 
 hook global WinCreate .*\.json %{
-	addhl buffer/ show-whitespaces
+  addhl buffer/ show-whitespaces
 }
 
 hook global BufSetOption filetype=yaml %{
@@ -233,7 +286,7 @@ hook global WinSetOption filetype=dart %{
     lsp-auto-hover-enable
     lsp-auto-signature-help-enable
 
-  	set-option window formatcmd 'dartfmt -l 160'
+    set-option window formatcmd 'dartfmt -l 160'
 }
 
 hook global BufWritePre filetype=dart %{
