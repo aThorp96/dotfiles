@@ -73,7 +73,8 @@ plug "ul/kak-lsp" do %{
 
     echo DONE
 } config %{
-    # set-option global lsp_completion_trigger "execute-keys 'h<a-h><a-k>\S[^\h\n,=;*(){}\[\]]\z<ret>'"
+    # uncomment for debugging
+    # set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
 
     hook global WinSetOption filetype=(rust|typescript|dart|python|ruby|`python`) %{
       lsp-start
@@ -153,8 +154,8 @@ hook global BufSetOption filetype=typescript %{
 #-Ruby
 hook global BufSetOption filetype=ruby %{
     echo "Ruby mode"
-    set-option buffer lintcmd %{ run() { cat "${1}" | bundle exec rubocop -c .rubocop.yml --format emacs -s "${kak_buffile}" 2>&1; } && run }
-    set-option buffer formatcmd "bundle exec rubocop -x -o /dev/null -c .rubocop.yml -s '${kak_buffile}' | sed -n '2,$p'"
+    set-option buffer lintcmd %{ run() { cat "${1}" | bundle exec rubocop -c $(git rev-parse --show-toplevel 2>/dev/null || pwd)/.rubocop.yml --format emacs -s "${kak_buffile}" 2>&1; } && run }
+    set-option buffer formatcmd "bundle exec rubocop -x -o /dev/null -c $(git rev-parse --show-toplevel 2>/dev/null || pwd)/.rubocop.yml -s '${kak_buffile}' | sed -n '2,$p'"
 
     hook buffer ModeChange pop:insert:normal %{
         lint
