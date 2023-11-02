@@ -153,7 +153,7 @@ bak() {
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-if [[ -z "$(ssh-add -l | grep 'andrew.thorp')" ]]; then
+if [[ -z "$(ssh-add -l | grep 'thorp')" ]]; then
     echo "Adding SSH Key to keyring"; ssh-add ~/.ssh/id_rsa
 fi
 
