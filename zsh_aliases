@@ -1,0 +1,124 @@
+alias python=python3
+export PYTHONBREAKPOINT="pudb.set_trace"
+
+activate() {
+	# Determine where virtualenv name is used
+	VENV_DIR=""
+	test -d .venv && VENV_DIR=".venv"
+
+	if [[ -z "${VENV_DIR}" ]]; then
+		test -d venv && VENV_DIR="venv"
+	fi
+
+	if [[ -z "${VENV_DIR}" ]]; then
+		echo "Could not find virtualenv at '.venv' or 'venv'" >&2
+		return
+	fi
+
+	# Deactivate old virtualenv, if there is one
+	which deactivate >/dev/null && deactivate
+
+	# Activate new VENV
+	source "${VENV_DIR}/bin/activate"
+}
+
+npms() {
+	if [[ ! -f "./package.json" ]]; then
+		echo "No file named 'package.json'"
+		return
+	fi
+
+	echo "select a script"
+
+	SCRIPT=$(jq -r ".scripts | to_entries[] | .key" ./package.json | fzf)
+
+	npm run "${SCRIPT}"
+}
+
+alias npmr="npm run"
+alias diff=colordiff
+
+select_docker_compose_service() {
+	docker compose ps --format json | jq -r '.[].Service' | fzf
+}
+
+# docker-compose attach
+dca() {
+	SERVICE="$(docker compose ps --format json | jq -r '.[].Service' | fzf)"
+	docker attach --sig-proxy=false $(docker compose ps -q "${SERVICE}")
+}
+
+# docker compose logs
+dcl() {
+	SERVICE="$(select_docker_compose_service)"
+	docker-compose logs "${SERVICE}" -f
+}
+
+cloud_env_keys() {
+	cat "${CLOUD_ENV}" | grep -v '^#' | cut -d '=' -f 1 |  sed '/^\s*$/d' | sort 
+}
+
+clear_cloud_env() {
+	# If there is no cloud env sourced, return
+	test -n "${CLOUD_ENV}" || return
+
+	eval $(cloud_env_keys | sed 's/^/unset /g;s/^unset $//g')
+
+	unset CLOUD_ENV
+}
+
+cloud_env() {
+	# If there is no cloud env sourced, return
+	test -n "${CLOUD_ENV}" || (echo "No cloud ENV set"; return)
+
+	eval $(cloud_env_keys | awk '{ printf "echo -e %s = $%s; ", $1, $1}')
+}
+
+source_cloud_env() {
+	ENV_FILE="${1:?Please provide an env file to source}"
+
+	if [ ! -f "${ENV_FILE}" ]; then
+		echo "File ${ENV_FILE} does not exist"
+		return 1
+	fi
+
+	if [[ -n "${CLOUD_ENV}" ]]; then
+		clear_cloud_env
+	fi
+
+	export CLOUD_ENV="$(readlink -f "${ENV_FILE}")"
+
+	eval $(cat "${CLOUD_ENV}" | sed '/^#.*$/d; /^[[:space:]]*$/d; s/^/export /g')
+}
+
+alias parse_cookie="sed 's/\; /\n/g; s/=/: /'"
+
+chpwd() {
+	# Load local gemfile if applicable
+	GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+	if [[ -d "$GIT_ROOT" && -f "$GIT_ROOT/.local.Gemfile" ]]; then
+		export BUNDLE_GEMFILE="$GIT_ROOT/.local.Gemfile"
+	elif [[ -n "$BUNDLE_GEMFILE" ]]; then
+		unset BUNDLE_GEMFILE
+	fi
+}
+
+random_uuid() {
+	python3 -c 'import uuid; print(uuid.uuid4())'
+}
+
+serve() {
+	python3 -m http.serve $@
+}
+
+mov_to_gif() {
+	test -n "${1}" || (echo "please provide a source file and destination file"; return)
+	test -n "${2}" || (echo "please provide a destination file"; return)
+
+	convert -layers Optimize -delay 2x100 "${1}" "${2}"
+}
+
+# Source https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell
+urldecode() {
+	echo "$@" | python3 -c "import sys; from urllib.parse import unquote; print(unquote(sys.stdin.read()));"
+}
