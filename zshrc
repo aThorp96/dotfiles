@@ -124,6 +124,7 @@ export PATH=$PATH:~/.platformio/penv/bin
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 export PATH="$PATH":"$HOME/code/uxn/uxn/bin"
 export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/Library/Python/3.9/lib/python/site-packages:$PATH"
 
 export ANDROID_HOME="$HOME/SDKs/Android"
 export PATH="$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator"
@@ -162,6 +163,8 @@ if [[ -z "$(which pyenv)" ]]; then
     command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
     eval "$(pyenv init -)"
 fi
+
 export PATH="/opt/homebrew/opt/ruby@3.0/bin:$PATH"
 export PATH="/opt/homebrew/opt/node@16/bin:$PATH"
 export PATH="/Users/athorp/.yarn/bin:$PATH"
+export PATH="/Users/athorp/Library/Python/3.11/bin:$PATH"

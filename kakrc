@@ -42,6 +42,7 @@ tabnew -params .. -command-completion %{
 }
 
 map -docstring "edit kakrc" global user e :e<space>~/.config/kak/kakrc<ret>
+map -docstring "parse JSON string" global user j "| python3 -c 'import json,sys;print(json.load(sys.stdin))' | jq .<ret>"
 map -docstring "reload kakrc" global user r :source<space>~/.config/kak/kakrc<ret>
 map -docstring "lsp mode" global user l ':enter-user-mode lsp<ret>'
 map -docstring "next lint message" global user L :lint-next-message<ret>
@@ -50,7 +51,9 @@ map -docstring "clear spell" global user C :spell-clear<ret>
 map -docstring "system-yank" global user y |pbcopy&&pbpaste<ret>
 map -docstring "comment line" global user c :comment-line<ret>
 map -docstring "format" global user f :format<ret>
-map -docstring "toggle kaktree" global user t :kaktree-toggle<ret>
+# map -docstring "tagbar" global user t :tagbar-toggle<ret>
+map -docstring "fzf open file" global user o :fzf-mode<ret>f
+map -docstring "fzf switch buffer" global user b :fzf-mode<ret>b
 
 ############
 # Plugins
@@ -58,9 +61,37 @@ map -docstring "toggle kaktree" global user t :kaktree-toggle<ret>
 # source "%val{config}/plugins/uxn.kak/tal.kak"
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
+plug "enricozb/tabs.kak" config %{
+    set-option global tabs_options --minified
+}
+
+# plug "danr/kakoune-easymotion" config %{
+#     map global user w :easy-motion-w<ret>
+#     map global user W :easy-motion-W<ret>
+#     map global user j :easy-motion-j<ret>
+# }
+
+# plug "andreyorst/tagbar.kak" defer "tagbar" %{
+#     set-option global tagbar_sort true
+#     set-option global tagbar_size 40
+#     set-option global tagbar_display_anon false
+# } config %{
+#     # if you have wrap highlighter enamled in you configuration
+#     # files it's better to turn it off for tagbar, using this hook:
+#     hook global WinSetOption filetype=tagbar %{
+#         remove-highlighter window/wrap
+#         # you can also disable rendering whitespaces here, line numbers, and
+#         # matching characters
+#     }
+# }
+
 plug "golang/tools" noload do %{
     go install -v golang.org/x/tools/gopls@latest
     echo DONE
+}
+
+plug "occivink/kakoune-filetree" do %{
+    map -docstring "toggle kaktree" global user t :filetree<ret>
 }
 
 plug "ul/kak-lsp" do %{
@@ -74,7 +105,7 @@ plug "ul/kak-lsp" do %{
     echo DONE
 } config %{
     # uncomment for debugging
-    # set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
+    set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
 
     hook global WinSetOption filetype=(rust|typescript|dart|python|ruby|`python`) %{
       lsp-start
@@ -128,7 +159,7 @@ plug "andreyorst/kaktree" defer kaktree %{
 ##############################################
 #-Typescript
 hook global BufSetOption filetype=typescript %{
-    set-option buffer lintcmd 'run() { cat "$1" | npx eslint -f unix --stdin --stdin-filename "$kak_buffile";} && run'
+    set-option buffer lintcmd 'run() { if [[ -f "$(git rev-parse --show-toplevel)/package.json" ]]; then cat "$1" | npx eslint -f unix --stdin --stdin-filename "$kak_buffile"; fi } && run'
     set-option buffer formatcmd "prettier --stdin-filepath=%val{buffile}"
 
     hook buffer ModeChange pop:insert:normal %{
@@ -154,8 +185,8 @@ hook global BufSetOption filetype=typescript %{
 #-Ruby
 hook global BufSetOption filetype=ruby %{
     echo "Ruby mode"
-    set-option buffer lintcmd %{ run() { cat "${1}" | bundle exec rubocop -c $(git rev-parse --show-toplevel 2>/dev/null || pwd)/.rubocop.yml --format emacs -s "${kak_buffile}" 2>&1; } && run }
-    set-option buffer formatcmd "bundle exec rubocop -x -o /dev/null -c $(git rev-parse --show-toplevel 2>/dev/null || pwd)/.rubocop.yml -s '${kak_buffile}' | sed -n '2,$p'"
+    set-option buffer lintcmd %{ run() { cat "${1}" | timeout 5 bundle exec rubocop -c $(git rev-parse --show-toplevel 2>/dev/null || pwd)/.rubocop.yml --format emacs -s "${kak_buffile}" 2>&1; } && run }
+    set-option buffer formatcmd "timeout 5 bundle exec rubocop -x -o /dev/null -c $(git rev-parse --show-toplevel 2>/dev/null || pwd)/.rubocop.yml -s '${kak_buffile}' | sed -n '2,$p'"
 
     hook buffer ModeChange pop:insert:normal %{
         lint
@@ -178,6 +209,7 @@ hook global BufSetOption filetype=ruby %{
     set buffer tabstop 2
     set buffer indentwidth 2
     expandtab
+    # tagbar-enable
 
     lsp-auto-hover-enable
 
@@ -185,13 +217,13 @@ hook global BufSetOption filetype=ruby %{
 
 #-Markdown
 hook global WinSetOption filetype=markdown %{
-  add-highlighter buffer/ wrap -word -indent 
-    add-highlighter window/fold-mark ref fold-mark
+  add-highlighter buffer/ wrap -word -indent
+  add-highlighter window/fold-mark ref fold-mark
 }
 
 hook global BufSetOption filetype=gemini %{
-    echo -debug "Gemini mode"
-    colorscheme gruvbox-dark
+  echo -debug "Gemini mode"
+  colorscheme gruvbox-dark
   add-highlighter buffer/ wrap -word -indent
 }
 
@@ -220,25 +252,20 @@ set window lintcmd 'golangci-lint run'
 }
 
 #-Python
-hook global WinSetOption filetype=python %{
-    set-option global lsp_config %{
-            [language.python.settings._]
-            "pyls.configurationSources" = ["flake8"]
-            "pylsp.plugins.flake8.enabled" = true
-            "pylsp.plugins.pycodestyle.enabled" = false
-            "pylsp.plugins.mccabe.enabled" = false
-            "pylsp.plugins.pyflakes.enabled" = false
-    }
+hook global BufOpenFile .*\.pyi %{
+    set-option buffer filetype python
+}
 
-    expandtab
+hook global WinSetOption filetype=python %{
+  expandtab
 
   addhl buffer/ show-whitespaces
 
     # hook global InsertChar \t %{ exec -draft -itersel h@ }
   jedi-enable-autocomplete
-  set-option window lintcmd 'python -m pylint'
-  set-option window formatcmd 'black -q  -'
-  lint-enable
+    set-option window lintcmd %{ run() { timeout 5 python3 -m pylint --msg-template='{path}:{line}:{column}: {category}: {msg_id}: {msg} ({symbol})' "$1" | awk -F: 'BEGIN { OFS=":" } { if (NF == 6) { $3 += 1; print } }'; }; run }
+    set-option window formatcmd 'black -q  -'
+  # tagbar-enable
 }
 
 #  - Format on write
