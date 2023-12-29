@@ -6,35 +6,27 @@ verbosity = 5
 # set to 0 to disable
 timeout = 1800 # seconds = 30 minutes
 
-[language_server.rust]
-filetypes = ["rust"]
-roots = ["Cargo.toml"]
-command = "rust-analyzer"
 
-[language_server.dart]
-filetypes = ["dart"]
-roots = ["pubspec.yaml"]
-command = "dart language-server"
-
-[language_server.typescript-language-server]
+[language_server.deno-lsp]
 filetypes = ["typescript", "javascript"]
-roots = ["package.json"]
-command = "typescript-language-server"
-args = ["--stdio"]
+roots = ["deno.json"]
+command = "deno"
+args = ["lsp"]
 
-[language_server.ruby]
-filetypes = ["ruby"]
-roots = ["Gemfile"]
-command = "bundle"
-args = ["exec", "solargraph", "stdio"]
+[language_server.deno-lsp.settings.deno]
+enable = true
+lint = true
 
-[language_server.python]
-filetypes = ["python"]
-roots = ["requirements.txt", "setup.py", ".git", ".hg"]
-command = "pyright-langserver"
-args = ["--stdio", "--verbose"]
-offset_encoding = "utf-8"
-settings_section = "_"
+# [language_server.python.settings._]
+# pyls.configurationSources = ["flake8"]
+# pylsp.plugins.flake8.enabled = true
+# pylsp.plugins.flake8.maxLineLength = 120
+# pylsp.plugins.pycodestyle.enabled = false
+# pylsp.plugins.mccabe.enabled = false
+# pylsp.plugins.pyflakes.enabled = false
+
+# Reference
+# https://microsoft.github.io/language-server-protocol/specification#textDocument_semanticTokens
 
 [semantic_tokens]
 faces = [

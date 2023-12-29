@@ -94,6 +94,7 @@ plug "occivink/kakoune-filetree" do %{
     map -docstring "toggle kaktree" global user t :filetree<ret>
 }
 
+
 plug "ul/kak-lsp" do %{
     cargo install --locked --force --path .
 
@@ -104,10 +105,20 @@ plug "ul/kak-lsp" do %{
 
     echo DONE
 } config %{
-    # uncomment for debugging
-    set global lsp_cmd "kak-lsp -s %val{session} -vvv --log /tmp/kak-lsp.log"
+    declare-option str lsp_toml_path '$HOME/.config/kak-lsp/kak-lsp.toml'
+
+    # Look for a file named .kakrc.local in working directory on kakoune startup
+    evaluate-commands %sh{
+        DIR="$(git rev-parse --show-toplevel 2>/dev/null)"
+        if [ -f "${DIR:-.}/deno.json" ]; then
+            printf "set-option global lsp_toml_path '$HOME/.config/kak-lsp/kak-lsp-deno.toml'"
+        fi
+    }
+
+    set global lsp_cmd "kak-lsp -s %val{session} --config %opt{lsp_toml_path}" # -vvv --log /tmp/kak-lsp.log"
 
     hook global WinSetOption filetype=(rust|typescript|dart|python|ruby|`python`) %{
+      echo -debug "Starting LSP with configuration %opt{lsp_toml_path}"
       lsp-start
       lsp-enable-window
       lsp-auto-hover-enable
@@ -270,9 +281,9 @@ hook global WinSetOption filetype=python %{
 
 #  - Format on write
 hook global BufWritePre .*\.py %{
-  echo -debug "Running Black on %val{bufname}"
+  # echo -debug "Running Black on %val{bufname}"
+  # format
   lint
-    format
 }
 
 #  - .pt files are python templated HTML
