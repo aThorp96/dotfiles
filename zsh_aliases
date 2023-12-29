@@ -59,6 +59,11 @@ cloud_env_keys() {
 }
 
 clear_cloud_env() {
+	if [[ -n "${OLD_PS1}" ]]; then
+		export PS1=$OLD_PS1
+		unset OLD_PS1
+	fi
+
 	# If there is no cloud env sourced, return
 	test -n "${CLOUD_ENV}" || return
 
@@ -86,6 +91,15 @@ source_cloud_env() {
 		clear_cloud_env
 	fi
 
+	# Set Cloud ENV prompt
+	if [[ -z "${OLD_PS1}" ]]; then
+		export OLD_PS1=$PS1
+	fi
+	ENV_NAME=$(basename "${ENV_FILE}" | cut -d '.' -f 1)
+	export PS1="%{$fg[red]%}(${ENV_NAME})
+${PS1}"
+
+	# Evaluate and source the file
 	export CLOUD_ENV="$(readlink -f "${ENV_FILE}")"
 
 	eval $(cat "${CLOUD_ENV}" | sed '/^#.*$/d; /^[[:space:]]*$/d; s/^/export /g')
