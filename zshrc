@@ -80,7 +80,7 @@ ZSH_THEME="3den"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git rg kubectl)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -168,3 +168,8 @@ export PATH="/opt/homebrew/opt/ruby@3.0/bin:$PATH"
 export PATH="/opt/homebrew/opt/node@16/bin:$PATH"
 export PATH="/Users/athorp/.yarn/bin:$PATH"
 export PATH="/Users/athorp/Library/Python/3.11/bin:$PATH"
+export PATH="${HOME}/.rd/bin:${PATH}"
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/Users/athorp/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
