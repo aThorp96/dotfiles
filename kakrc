@@ -73,8 +73,40 @@ define-command open-git-remote -docstring %{
     }
 }
 
+define-command copy-git-remote -docstring %{
+    copy-git-remote [remote-name]: Copy path to current line of code in the git remote's UI
+} %{
+    evaluate-commands %sh{
+        export FILE_PATH=${kak_buffile}
+        # Get git-relative path
+        export FILE_PATH=$(realpath ${FILE_PATH})
+        export FILE_PATH=${FILE_PATH#$(git rev-parse --show-toplevel)}
+
+        export LINE_NUMBER=${kak_cursor_line}
+        export REMOTE=$(git remote get-url ${3:-origin})
+        export BRANCH=$(git branch --show-current)
+
+        # Convert SSH remotes to https
+        if [[ ${REMOTE} =~ ^git@ ]]; then
+            export REMOTE=$(echo "${REMOTE}" | sed 's#:#/#; s#git@#https://#; s#.git$##')
+        fi
+
+        # Github uses $repo/blob/$path
+        # Sourcehut uses $repo/tree/$path
+        export TREE_PREFIX="tree"
+        if [[ ${REMOTE} =~ "github" ]]; then
+            export TREE_PREFIX="blob"
+        fi
+
+        export URL="${REMOTE}/${TREE_PREFIX}/${BRANCH}/${FILE_PATH#/}#L${LINE_NUMBER}"
+
+        echo ${URL} | pbcopy && echo "echo -debug coppied ${URL}"
+    }
+}
+
 
 map -docstring "Open current line in browser" global user O :open-git-remote
+map -docstring "Copy link to current line of code" global user Y :copy-git-remote
 map -docstring "edit kakrc" global user e :e<space>~/.config/kak/kakrc<ret>
 map -docstring "parse JSON string" global user j "| python3 -c 'import json,sys;print(json.load(sys.stdin))' | jq .<ret>"
 map -docstring "reload kakrc" global user r :source<space>~/.config/kak/kakrc<ret>
