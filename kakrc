@@ -41,6 +41,40 @@ tabnew -params .. -command-completion %{
         tmux-terminal-window kak -c %val{session} -e "%arg{@}"
 }
 
+define-command open-git-remote -docstring %{
+    open-git-remote [remote-name]: Open the current file and line in the browser
+    If no remote is provided, the the default is assumed to be 'origin'
+} %{
+    evaluate-commands %sh{
+        export FILE_PATH=${kak_buffile}
+        # Get git-relative path
+        export FILE_PATH=$(realpath ${FILE_PATH})
+        export FILE_PATH=${FILE_PATH#$(git rev-parse --show-toplevel)}
+
+        export LINE_NUMBER=${kak_cursor_line}
+        export REMOTE=$(git remote get-url ${3:-origin})
+        export BRANCH=$(git branch --show-current)
+
+        # Convert SSH remotes to https
+        if [[ ${REMOTE} =~ ^git@ ]]; then
+            export REMOTE=$(echo "${REMOTE}" | sed 's#:#/#; s#git@#https://#; s#.git$##')
+        fi
+
+        # Github uses $repo/blob/$path
+        # Sourcehut uses $repo/tree/$path
+        export TREE_PREFIX="tree"
+        if [[ ${REMOTE} =~ "github" ]]; then
+            export TREE_PREFIX="blob"
+        fi
+
+        export URL="${REMOTE}/${TREE_PREFIX}/${BRANCH}/${FILE_PATH#/}#L${LINE_NUMBER}"
+
+        open ${URL} && echo "echo -debug opened ${URL}"
+    }
+}
+
+
+map -docstring "Open current line in browser" global user O :open-git-remote
 map -docstring "edit kakrc" global user e :e<space>~/.config/kak/kakrc<ret>
 map -docstring "parse JSON string" global user j "| python3 -c 'import json,sys;print(json.load(sys.stdin))' | jq .<ret>"
 map -docstring "reload kakrc" global user r :source<space>~/.config/kak/kakrc<ret>
@@ -274,7 +308,7 @@ hook global WinSetOption filetype=python %{
 
     # hook global InsertChar \t %{ exec -draft -itersel h@ }
   jedi-enable-autocomplete
-    set-option window lintcmd %{ run() { timeout 5 python3 -m pylint --msg-template='{path}:{line}:{column}: {category}: {msg_id}: {msg} ({symbol})' "$1" | awk -F: 'BEGIN { OFS=":" } { if (NF == 6) { $3 += 1; print } }'; }; run }
+    set-option window lintcmd %{ run() { timeout 5 python3 -m pylint --msg-template='{path}:{line}:{column}: {category}: {msg_id}: {msg} ({symbol})' "$1" | timeout 5 awk -F: 'BEGIN { OFS=":" } { if (NF == 6) { $3 += 1; print } }'; }; run }
     set-option window formatcmd 'black -q  -'
   # tagbar-enable
 }
