@@ -126,6 +126,7 @@ map -docstring "fzf switch buffer" global user b :fzf-mode<ret>b
 ############
 # source "%val{config}/plugins/uxn.kak/tal.kak"
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
+plug "andreyorst/plug.kak" noload
 
 plug "enricozb/tabs.kak" config %{
     set-option global tabs_options --minified
@@ -190,7 +191,7 @@ plug "ul/kak-lsp" do %{
       lsp-auto-hover-enable
       lsp-inlay-diagnostics-enable window
       # lsp-inlay-hints-enable window
-      lsp-inlay-code-lenses-enable window
+      # lsp-inlay-code-lenses-enable window
 
       set-option window lsp_hover_anchor true
     }
@@ -212,6 +213,7 @@ map global normal <c-f> ': fzf-mode<ret>'
 plug "Anfid/cosy-gruvbox.kak" theme
 
 plug "https://git.sr.ht/~athorp96/uxntal.kak"
+plug "https://git.sr.ht/~athorp96/austral.kak"
 
 plug "whereswaldon/shellcheck.kak"
 
@@ -230,6 +232,7 @@ plug "andreyorst/kaktree" defer kaktree %{
   }
   kaktree-enable
 }
+
 
 ##############################################
 # Type specific hooks (Thanks @whereswaldon )
@@ -380,6 +383,11 @@ hook global WinSetOption filetype=c %{
     }
 }
 
+hook global BufCreate .*\.ino %{
+    set buffer filetype c
+}
+
+
 #-Dart
 hook global WinSetOption filetype=dart %{
     echo -debug "Dart mode"
@@ -416,6 +424,49 @@ hook global WinCreate .*\.eml %{
 hook global WinCreate .*COMMIT_EDITMSG %{
     add-highlighter window/fold-mark ref fold-mark
     set global autoreload no
+}
+
+# JavaScript
+define-command format-eslint -docstring %{
+    Formats the current buffer using eslint.
+    Respects your local project setup in eslintrc.
+} %{
+    evaluate-commands -draft -no-hooks -save-regs '|' %{
+        # Select all to format
+        execute-keys '%'
+
+        # eslint does a fix-dry-run with a json formatter which results in a JSON output to stdout that includes the fixed file.
+        # jq then extracts the fixed file output from the JSON. -j returns the raw output without any escaping.
+        set-register '|' %{
+            format_out="$(mktemp)"
+            cat | \
+            npx eslint --format json \
+                       --fix-dry-run \
+                       --stdin \
+                       --stdin-filename "$kak_buffile" | \
+            jq -j ".[].output" > "$format_out"
+            if [ $? -eq 0 ] && [ $(wc -c < "$format_out") -gt 4 ]; then
+                cat "$format_out"
+            else
+                printf 'eval -client %s %%{ fail eslint formatter returned an error %s }\n' "$kak_client" "$?" | kak -p "$kak_session"
+                printf "%s" "$kak_quoted_selection"
+            fi
+            rm -f "$format_out"
+        }
+
+        # Replace all with content from register:
+        execute-keys '|<ret>'
+    }
+}
+
+hook global WinSetOption filetype=javascript %{
+    set-option window lintcmd 'run() { cat "$1" | npx eslint -f unix --stdin --stdin-filename "$kak_buffile";} && run '
+    # using npx to run local eslint over global
+    # formatting with prettier `npm i prettier --save-dev`
+    set-option window formatcmd 'npx prettier --parser babel --stdin-filepath=${buffile}'
+
+    # alias window fix format # the patched version, renamed to `format2`.
+    lint-enable
 }
 
 #-Ledger 
