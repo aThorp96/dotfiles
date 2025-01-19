@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+ORIENTATION=${1:-}
+ORIENTATIONS="left\nbelow"
+if [[ -z "${ORIENTATION}" ]]; then
+    ORIENTATION=$(echo -e "${ORIENTATIONS}" | fzf)
+fi
+

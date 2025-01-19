@@ -1,4 +1,4 @@
-verbosity = 5
+verbosity = 3
 
 [server]
 # exit session if no requests were received during given period in seconds
@@ -35,6 +35,26 @@ command = "pyright-langserver"
 args = ["--stdio", "--verbose"]
 offset_encoding = "utf-8"
 settings_section = "_"
+
+[language_server.go]
+filetypes = ["go"]
+roots = ["Gopkg.toml", "go.mod", ".git", ".hg"]
+command = "gopls"
+[language_server.gopls.settings.gopls]
+# See https://github.com/golang/tools/blob/master/gopls/doc/settings.md
+# "build.buildFlags" = []
+hints.assignVariableTypes = true
+hints.compositeLiteralFields = true
+hints.compositeLiteralTypes = true
+hints.constantValues = true
+hints.functionTypeParameters = true
+hints.parameterNames = true
+hints.rangeVariableTypes = true
+"ui.completion.usePlaceholders" = true
+
+
+
+
 
 [semantic_tokens]
 faces = [

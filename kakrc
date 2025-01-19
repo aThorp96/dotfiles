@@ -8,11 +8,14 @@ set global indentwidth 4
 # jk to escape
 hook global InsertChar k %{ try %{
       exec -draft hH <a-k>jk<ret> d
+      # Trim trailing whitespace since the normal ModeChange hook
+      # wil not execute from inside this function
+      try %{ execute-keys -draft -itersel x s \h+$ <ret> d }
       exec <esc>
 }}
 
 # Set line numbers
-addhl global/ number-lines -hlcursor
+add-highlighter global/number-lines number-lines -hlcursor
 set global scrolloff 15,0
 
 # Colors and things
@@ -46,14 +49,18 @@ define-command open-git-remote -docstring %{
     If no remote is provided, the the default is assumed to be 'origin'
 } %{
     evaluate-commands %sh{
-        export FILE_PATH=${kak_buffile}
-        # Get git-relative path
-        export FILE_PATH=$(realpath ${FILE_PATH})
-        export FILE_PATH=${FILE_PATH#$(git rev-parse --show-toplevel)}
+        if [[ -d .git ]]; then
+          export FILE_PATH=${kak_buffile}
+          # Get git-relative path
+          export FILE_PATH=$(realpath ${FILE_PATH})
+          export FILE_PATH=${FILE_PATH#$(git rev-parse --show-toplevel)/}
+        else
+          export FILE_PATH=${kak_bufname}
+        fi
 
         export LINE_NUMBER=${kak_cursor_line}
-        export REMOTE=$(git remote get-url ${3:-origin})
-        export BRANCH=$(git branch --show-current)
+        export REMOTE=$(git remote get-url ${3:-origin} || jj git remote list | grep 'origin' | cut -d ' ' -f 2)
+        export BRANCH=$(git branch --show-current || echo "main")
 
         # Convert SSH remotes to https
         if [[ ${REMOTE} =~ ^git@ ]]; then
@@ -67,9 +74,9 @@ define-command open-git-remote -docstring %{
             export TREE_PREFIX="blob"
         fi
 
-        export URL="${REMOTE}/${TREE_PREFIX}/${BRANCH}/${FILE_PATH#/}#L${LINE_NUMBER}"
+        export URL="${REMOTE}/${TREE_PREFIX}/${BRANCH}/${FILE_PATH}#L${LINE_NUMBER}"
 
-        open ${URL} && echo "echo -debug opened ${URL}"
+        xdg-open ${URL} && echo "echo -debug opened ${URL}"
     }
 }
 
@@ -100,13 +107,15 @@ define-command copy-git-remote -docstring %{
 
         export URL="${REMOTE}/${TREE_PREFIX}/${BRANCH}/${FILE_PATH#/}#L${LINE_NUMBER}"
 
-        echo ${URL} | pbcopy && echo "echo -debug coppied ${URL}"
+        echo ${URL} | wl-copy&
+
+        echo "echo -debug coppied ${URL}"
     }
 }
 
 
-map -docstring "Open current line in browser" global user O :open-git-remote
-map -docstring "Copy link to current line of code" global user Y :copy-git-remote
+map -docstring "Open current line in browser" global user O :open-git-remote<ret>
+map -docstring "Copy link to current line of code" global user Y :copy-git-remote<ret>
 map -docstring "edit kakrc" global user e :e<space>~/.config/kak/kakrc<ret>
 map -docstring "parse JSON string" global user j "| python3 -c 'import json,sys;print(json.load(sys.stdin))' | jq .<ret>"
 map -docstring "reload kakrc" global user r :source<space>~/.config/kak/kakrc<ret>
@@ -114,29 +123,70 @@ map -docstring "lsp mode" global user l ':enter-user-mode lsp<ret>'
 map -docstring "next lint message" global user L :lint-next-message<ret>
 map -docstring "spell" global user s :spell<ret>
 map -docstring "clear spell" global user C :spell-clear<ret>
-map -docstring "system-yank" global user y |pbcopy&&pbpaste<ret>
+map -docstring "system-yank" global user y  <a-|>wl-copy<ret>
+map -docstring "system-paste" global user p !wl-paste<ret>
 map -docstring "comment line" global user c :comment-line<ret>
 map -docstring "format" global user f :format<ret>
 # map -docstring "tagbar" global user t :tagbar-toggle<ret>
-map -docstring "fzf open file" global user o :fzf-mode<ret>f
-map -docstring "fzf switch buffer" global user b :fzf-mode<ret>b
+map -docstring "fuzzy-find file" global user o :peneira-files<ret>
+map -docstring "fzf switch buffer" global user b :peneira-buffers<ret>
 
 ############
 # Plugins
 ############
+#   set global lsp_cmd "kak-lsp -s %val{session} --config %opt{lsp_toml_path}" # -vvv --log /tmp/kak-lsp.log"
+
+eval %sh{kak-lsp}
+
+set global lsp_diagnostic_line_error_sign '║'
+set global lsp_diagnostic_line_warning_sign '┊'
+
+hook global WinSetOption filetype=(go|yaml|rust|typescript|dart|python|ruby|`python`) %{
+    echo -debug "Starting LSP"
+    set-option window lsp_auto_highlight_references true
+    set-option window lsp_hover_anchor false
+    lsp-inlay-diagnostics-enable window
+    lsp-auto-hover-enable
+    echo -debug "Enabling LSP for filtetype %opt{filetype}"
+    lsp-enable-window
+}
+hook global WinSetOption filetype=(go) %{
+    set-option buffer lsp_servers %{
+        [gopls]
+        root_globs = ["Gopkg.toml", "go.mod", ".git", ".hg"]
+        [gopls.settings.gopls]
+        # See https://github.com/golang/tools/blob/master/gopls/doc/settings.md
+        "build.buildFlags" = ["-tags=e2e"]
+        hints.assignVariableTypes = true
+        hints.compositeLiteralFields = true
+        hints.compositeLiteralTypes = true
+        hints.constantValues = true
+        hints.functionTypeParameters = true
+        hints.parameterNames = true
+        hints.rangeVariableTypes = true
+        usePlaceholders = true
+    }
+  hook -group gofmt buffer BufWritePre .* %{
+      lsp-formatting-sync
+  }
+}
+
+hook global KakEnd .* lsp-exit
+
+
 # source "%val{config}/plugins/uxn.kak/tal.kak"
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "andreyorst/plug.kak" noload
 
-plug "enricozb/tabs.kak" config %{
-    set-option global tabs_options --minified
-}
-
-# plug "danr/kakoune-easymotion" config %{
-#     map global user w :easy-motion-w<ret>
-#     map global user W :easy-motion-W<ret>
-#     map global user j :easy-motion-j<ret>
+# plug "enricozb/tabs.kak" config %{
+#     # set-option global tabs_options --minified
 # }
+
+plug "danr/kakoune-easymotion" config %{
+    map global user w :easy-motion-w<ret>
+    map global user W :easy-motion-W<ret>
+    map global user j :easy-motion-j<ret>
+}
 
 # plug "andreyorst/tagbar.kak" defer "tagbar" %{
 #     set-option global tagbar_sort true
@@ -162,53 +212,24 @@ plug "occivink/kakoune-filetree" do %{
 }
 
 
-plug "ul/kak-lsp" do %{
-    cargo install --locked --force --path .
-
-    define-command -override -hidden lsp-show-error -params 1 -docstring "Render error" %{
-        echo -debug "kak-lsp:" %arg{1}
-        info -markup -title "{Error}KAK-LSP Error!" "{Error}kak-lsp: %arg{1}"
-    }
-
-    echo DONE
-} config %{
-    declare-option str lsp_toml_path '$HOME/.config/kak-lsp/kak-lsp.toml'
-
-    # Look for a file named .kakrc.local in working directory on kakoune startup
-    evaluate-commands %sh{
-        DIR="$(git rev-parse --show-toplevel 2>/dev/null)"
-        if [ -f "${DIR:-.}/deno.json" ]; then
-            printf "set-option global lsp_toml_path '$HOME/.config/kak-lsp/kak-lsp-deno.toml'"
-        fi
-    }
-
-    set global lsp_cmd "kak-lsp -s %val{session} --config %opt{lsp_toml_path}" # -vvv --log /tmp/kak-lsp.log"
-
-    hook global WinSetOption filetype=(rust|typescript|dart|python|ruby|`python`) %{
-      echo -debug "Starting LSP with configuration %opt{lsp_toml_path}"
-      lsp-start
-      lsp-enable-window
-      lsp-auto-hover-enable
-      lsp-inlay-diagnostics-enable window
-      # lsp-inlay-hints-enable window
-      # lsp-inlay-code-lenses-enable window
-
-      set-option window lsp_hover_anchor true
-    }
-
-    hook global KakEnd .* lsp-exit
-}
-
-
-
 plug "ABuffSeagull/kakoune-vue"
 
 plug "https://git.sr.ht/~athorp96/uxntal.kak"
 
 plug "kakoune-editor/kakoune-extra-filetypes"
 
-plug "andreyorst/fzf.kak"
-map global normal <c-f> ': fzf-mode<ret>'
+plug "gustavo-hms/luar" %{
+    plug "gustavo-hms/peneira" %{
+        require-module peneira
+        set-option global luar_interpreter luajit
+
+        define-command peneira-buffers %{
+            peneira 'buffers: ' %{ printf '%s\n' $kak_quoted_buflist } %{
+                buffer %arg{1}
+            }
+        }
+    }
+}
 
 plug "Anfid/cosy-gruvbox.kak" theme
 
@@ -319,13 +340,7 @@ hook global BufWritePre .*\.tex %{
 #-Golang
 hook global WinSetOption filetype=go %{
     echo -debug "Go mode"
-set window lintcmd 'golangci-lint run'
-    lsp-enable-window
-    lsp-auto-hover-enable
-    lsp-auto-signature-help-enable
-    hook -group gofmt buffer BufWritePre .* %{
-        lsp-formatting-sync
-    }
+    set window lintcmd 'golangci-lint run'
     # go-enable-autocomplete
     map buffer user ? :go-doc-info<ret>
     map buffer user j :go-jump<ret>
@@ -338,8 +353,6 @@ hook global BufOpenFile .*\.pyi %{
 
 hook global WinSetOption filetype=python %{
   expandtab
-
-  addhl buffer/ show-whitespaces
 
     # hook global InsertChar \t %{ exec -draft -itersel h@ }
   jedi-enable-autocomplete
@@ -365,10 +378,9 @@ hook global WinCreate .*\.json %{
 }
 
 hook global BufSetOption filetype=yaml %{
-    set global tabstop 2
-    set global indentwidth 2
-    hook global InsertChar \t %{ exec -draft -itersel h@ }
-    addhl buffer/ show-whitespaces
+    set buffer tabstop 2
+    set buffer indentwidth 2
+    hook buffer InsertChar \t %{ exec -draft -itersel h@ }
 }
 
 #-C
