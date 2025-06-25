@@ -74,7 +74,8 @@ function parse_component_image() {
 	echo -e "${OUT}"
 }
 
-export IMAGE="${1:?No image provided}"
+
+IMAGE="${1:?No image provided}"
 
 TMPDIR=$(mktemp -d)
 cd "${TMPDIR}"
