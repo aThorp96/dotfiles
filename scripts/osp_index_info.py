@@ -143,7 +143,12 @@ class Catalog:
         self.entries = self._pull_data()
 
     def _pull_data(self):
-        container_id = subprocess.run(["podman", "create", "-q", self.image], capture_output=True, text=True, check=True).stdout
+        try:
+            container_id = subprocess.run(["podman", "create", "-q", self.image], capture_output=True, text=True, check=True).stdout
+        except subprocess.CalledProcessError as e:
+            print(f"error creating container for catalog '{self.image}':\n---\n{e.output}\n---\n{e.stderr}")
+            raise e
+
         with tempfile.TemporaryDirectory() as tmpdir:
             outfile = f"{tmpdir}/catalog.json"
             subprocess.run(["podman", "cp", f"{str(container_id.strip())}:/configs/openshift-pipelines-operator-rh/catalog.json", outfile], check=True)
