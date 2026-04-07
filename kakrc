@@ -59,7 +59,7 @@ define-command open-git-remote -docstring %{
         fi
 
         export LINE_NUMBER=${kak_cursor_line}
-        export REMOTE=$(git remote get-url ${3:-origin} || jj git remote list | grep 'origin' | cut -d ' ' -f 2)
+        export REMOTE=$(git remote get-url ${3:-upstream} || jj git remote list | grep 'upstream' | cut -d ' ' -f 2)
         export BRANCH=$(git branch --show-current || echo "main")
 
         # Convert SSH remotes to https
@@ -90,13 +90,15 @@ define-command copy-git-remote -docstring %{
         export FILE_PATH=${FILE_PATH#$(git rev-parse --show-toplevel)}
 
         export LINE_NUMBER=${kak_cursor_line}
-        export REMOTE=$(git remote get-url ${3:-origin})
+        export REMOTE=$(git remote get-url ${3:-upstream})
         export BRANCH=$(git branch --show-current)
 
         # Convert SSH remotes to https
         if [[ ${REMOTE} =~ ^git@ ]]; then
+            echo "echo -debug Remote is ssh, converting: from ${REMOTE}"
             export REMOTE=$(echo "${REMOTE}" | sed 's#:#/#; s#git@#https://#; s#.git$##')
         fi
+        echo "echo -debug Remote found ${REMOTE}"
 
         # Github uses $repo/blob/$path
         # Sourcehut uses $repo/tree/$path
@@ -107,9 +109,8 @@ define-command copy-git-remote -docstring %{
 
         export URL="${REMOTE}/${TREE_PREFIX}/${BRANCH}/${FILE_PATH#/}#L${LINE_NUMBER}"
 
-        echo ${URL} | wl-copy&
-
-        echo "echo -debug coppied ${URL}"
+        echo "echo -debug copying ${URL}"
+        printf '%s' "${URL}" | eval wl-copy >/dev/null 2>&1 &
     }
 }
 
@@ -356,7 +357,7 @@ hook global WinSetOption filetype=python %{
 
     # hook global InsertChar \t %{ exec -draft -itersel h@ }
   jedi-enable-autocomplete
-    set-option window lintcmd %{ run() { timeout 5 python3 -m pylint --msg-template='{path}:{line}:{column}: {category}: {msg_id}: {msg} ({symbol})' "$1" | timeout 5 awk -F: 'BEGIN { OFS=":" } { if (NF == 6) { $3 += 1; print } }'; }; run }
+    set-option window lintcmd %{ run() { timeout 5 pylint --msg-template='{path}:{line}:{column}: {category}: {msg_id}: {msg} ({symbol})' "$1" | timeout 5 awk -F: 'BEGIN { OFS=":" } { if (NF == 6) { $3 += 1; print } }'; }; run }
     set-option window formatcmd 'black -q  -'
   # tagbar-enable
 }
