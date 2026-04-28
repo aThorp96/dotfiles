@@ -54,7 +54,6 @@ class TaskUp:
     @classmethod
     def set_task(cls, args: argparse.Namespace):
         cls()._set_task(args.task)
-        cls.show_task(args)
 
     @classmethod
     def clear_task(cls, args: argparse.Namespace):
