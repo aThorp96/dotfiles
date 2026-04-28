@@ -6,6 +6,10 @@
     "ghcr.io/meaningful-ooo/devcontainer-features/fish:2": {},
     "ghcr.io/eitsupi/devcontainer-features/jq-likes:2": {
       "yqVersion": "4"
+    },
+    "ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
+        "upgradePackages": true,
+        "packages": "kakoune"
     }
   },
   "customizations": {
