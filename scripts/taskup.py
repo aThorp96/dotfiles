@@ -2,31 +2,26 @@
 
 import os
 import argparse
-from pydantic import BaseModel
 import time
 
 
-class Task(BaseModel):
-    description: str
-
-
 class TaskUp:
-    path = os.path.join(os.environ.get('HOME'), ".config", "taskup.json")
+    path = os.path.join(os.environ.get('HOME'), ".config", "taskup.txt")
 
     def __init__(self, path: str = ""):
         if path:
             self.path = path
 
-    def get_task(self) -> Task:
+    def get_task(self) -> str:
         with open(self.path) as f:
-            return Task.model_validate_json(f.read())
+            return str(f.read()).strip()
 
     def _set_task(self, desc: str):
         with open(self.path, "w") as f:
-            f.write(Task(description=desc).model_dump_json())
+            f.write(desc)
 
     def render_task(self, max_width: int | None, scroll: bool, speed: int) -> str:
-        desc = self.get_task().description
+        desc = self.get_task()
         if max_width and len(desc) > max_width:
             if not scroll:
                 return desc[:max_width]
